@@ -79,6 +79,25 @@ send_sendxmpp() {
 	fi
 }
 
+# Using the custom commandline program xmppsend for two-way comm
+# send_xmpp [stanza_id]
+send_xmppsend() {
+	local stanza_id=$1
+
+	if (( DEBUG > 0 )); then
+		font yellow >&2
+		echo "Sending from: $xmpp_user@$xmpp_host" >&2
+		font off >&2
+	fi
+
+	if (( DEBUG < 1 )); then
+		# Silent Mode
+		./xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id} 2>/dev/null
+	else
+		./xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id}
+	fi
+}
+
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
 send() {
