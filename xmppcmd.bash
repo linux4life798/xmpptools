@@ -101,8 +101,8 @@ send_xmppsend() {
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
 send() {
-	#send_sendxmpp $@
-	send_xmppsend $@
+	send_sendxmpp $@
+	#send_xmppsend $@
 }
 
 # This function allows you to input an unqualified jid, like bob
