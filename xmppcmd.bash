@@ -60,13 +60,29 @@ if ! hash sendxmpp &>/dev/null; then
 	font >&2
 fi
 
-SEND="sendxmpp --raw -u $xmpp_user -j $xmpp_host -p $xmpp_pass"
+# echo "raw xml" | send
+# xmpp_user=tom echo "raw xml" | send
+send() {
+	if (( DEBUG > 0 )); then
+		font yellow >&2
+		echo "Sending from: $xmpp_user@$xmpp_host" >&2
+		font off >&2
+	fi
+
+	if (( DEBUG < 1 )); then
+		sendxmpp --raw -u $xmpp_user -j $xmpp_host -p $xmpp_pass >&2
+	elif (( DEBUG < 2)); then
+		sendxmpp --raw -v -u $xmpp_user -j $xmpp_host -p $xmpp_pass >&2
+	else
+		sendxmpp --raw -d -u $xmpp_user -j $xmpp_host -p $xmpp_pass >&2
+	fi
+}
 
 # message <to> <message_body>
 message() {
 	local to=$1
 	shift 1
-	$SEND <<-EOF
+	send <<-EOF
 	<message to='$to' type='chat'>
 		<body>$*</body>
 	</message>
@@ -76,7 +92,7 @@ message() {
 # create <node>
 create() {
 	local node=$1
-	$SEND <<-EOF
+	send <<-EOF
 	<iq type='set'
 	to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
@@ -91,7 +107,7 @@ publish() {
 	local node=$1
 	local id=$2
 	shift 2
-	$SEND <<-EOF
+	send <<-EOF
 	<iq type='set' to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 			<publish node='$node'>
@@ -109,7 +125,7 @@ subscribe() {
 	local node=$1
 	local jid=$2
 	shift 2
-	$SEND <<-EOF
+	send <<-EOF
 	<iq type='set' to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 			<subscribe node='$node' jid='$jid'/>
