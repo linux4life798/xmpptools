@@ -116,7 +116,7 @@ create() {
 	EOF
 }
 
-# publish <node> <item_id>
+# publish <node> <item_id> <item_content>
 publish() {
 	local node=$1
 	local id=$2
@@ -145,7 +145,6 @@ publish() {
 subscribe() {
 	local node=$1
 	local jid=$2
-	shift 2
 
 	# check args
 	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
