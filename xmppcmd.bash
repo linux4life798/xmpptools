@@ -169,7 +169,6 @@ create() {
 publish() {
 	local node=$1
 	local id=$2
-	shift 2
 
 	# check args
 	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
@@ -177,6 +176,7 @@ publish() {
 		return 0
 	fi
 
+	shift 2
 	local id=`newid`
 	send $id <<-EOF
 	<iq type='set'
