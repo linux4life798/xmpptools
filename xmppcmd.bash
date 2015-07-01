@@ -81,6 +81,13 @@ send() {
 # message <to> <message_body>
 message() {
 	local to=$1
+
+	# check args
+	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: message <to> <message_body>"
+		return 0
+	fi
+
 	shift 1
 	send <<-EOF
 	<message to='$to' type='chat'>
@@ -92,6 +99,13 @@ message() {
 # create <node>
 create() {
 	local node=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: create <node>"
+		return 0
+	fi
+
 	send <<-EOF
 	<iq type='set'
 	to='pubsub.$xmpp_host'>
@@ -107,6 +121,13 @@ publish() {
 	local node=$1
 	local id=$2
 	shift 2
+
+	# check args
+	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: publish <node> <item_id> <item_content>"
+		return 0
+	fi
+
 	send <<-EOF
 	<iq type='set' to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
@@ -125,6 +146,13 @@ subscribe() {
 	local node=$1
 	local jid=$2
 	shift 2
+
+	# check args
+	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: subscribe <node> <jid>"
+		return 0
+	fi
+
 	send <<-EOF
 	<iq type='set' to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
