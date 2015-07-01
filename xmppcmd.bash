@@ -60,9 +60,10 @@ if ! hash sendxmpp &>/dev/null; then
 	font >&2
 fi
 
+# Using the commandline utility sendxmpp
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
-send() {
+send_sendxmpp() {
 	if (( DEBUG > 0 )); then
 		font yellow >&2
 		echo "Sending from: $xmpp_user@$xmpp_host" >&2
@@ -76,6 +77,13 @@ send() {
 	else
 		sendxmpp --raw -d -u $xmpp_user -j $xmpp_host -p $xmpp_pass >&2
 	fi
+}
+
+# echo "raw xml" | send
+# xmpp_user=tom echo "raw xml" | send
+send() {
+	#send_sendxmpp $@
+	send_xmppsend $@
 }
 
 # This function allows you to input an unqualified jid, like bob
@@ -106,8 +114,11 @@ message() {
 	fi
 
 	shift 1
+	local id=`newid`
 	send <<-EOF
-	<message to='$to' type='chat'>
+	<message type='chat'
+			 id='$id'
+			 to='$to'>
 		<body>$*</body>
 	</message>
 	EOF
@@ -123,9 +134,11 @@ create() {
 		return 0
 	fi
 
-	send <<-EOF
+	local id=`newid`
+	send $id <<-EOF
 	<iq type='set'
-	to='pubsub.$xmpp_host'>
+		id='$id'
+		to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 		<create node='$node'/>
 		</pubsub>
@@ -145,8 +158,11 @@ publish() {
 		return 0
 	fi
 
-	send <<-EOF
-	<iq type='set' to='pubsub.$xmpp_host'>
+	local id=`newid`
+	send $id <<-EOF
+	<iq type='set'
+		id='$id'
+		to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 			<publish node='$node'>
 				<item id='$id'>
@@ -169,8 +185,11 @@ subscribe() {
 		return 0
 	fi
 
-	send <<-EOF
-	<iq type='set' to='pubsub.$xmpp_host'>
+	local id=`newid`
+	send $id <<-EOF
+	<iq type='set'
+		id='$id'
+		to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 			<subscribe node='$node' jid='$jid'/>
 		</pubsub>
