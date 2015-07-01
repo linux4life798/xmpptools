@@ -90,6 +90,11 @@ qualify_jid() {
 	fi
 }
 
+# Generate a unique id
+newid() {
+	echo "xmppsend$RANDOM"
+}
+
 # message <to> <message_body>
 message() {
 	local to=$(qualify_jid $1)
