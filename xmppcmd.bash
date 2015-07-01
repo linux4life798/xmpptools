@@ -78,9 +78,21 @@ send() {
 	fi
 }
 
+# This function allows you to input an unqualified jid, like bob
+# and get the local qualified jid bob@example.com
+# Example: jid=$(qualify_jid bob)
+qualify_jid() {
+	local to=$1
+	if [[ "$to" =~ "@" ]]; then
+		echo "${to}"
+	else
+		echo "${to}@${xmpp_host}"
+	fi
+}
+
 # message <to> <message_body>
 message() {
-	local to=$1
+	local to=$(qualify_jid $1)
 
 	# check args
 	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
@@ -144,7 +156,7 @@ publish() {
 # subscribe <node> <jid>
 subscribe() {
 	local node=$1
-	local jid=$2
+	local jid=$(qualify_jid $2)
 
 	# check args
 	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
