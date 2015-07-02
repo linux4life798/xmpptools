@@ -168,7 +168,7 @@ create() {
 # publish <node> <item_id> <item_content>
 publish() {
 	local node=$1
-	local id=$2
+	local item_id=$2
 
 	# check args
 	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
@@ -184,7 +184,7 @@ publish() {
 		to='pubsub.$xmpp_host'>
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 			<publish node='$node'>
-				<item id='$id'>
+				<item id='$item_id'>
 					$*
 				</item>
 			</publish>
