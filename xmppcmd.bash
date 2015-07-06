@@ -134,8 +134,8 @@ xml_prettyprint() {
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
 send() {
-	send_sendxmpp $@
-	#send_xmppsend $@ | xml_prettyprint
+	#send_sendxmpp $@
+	send_xmppsend $@ | xml_prettyprint
 }
 
 # This function allows you to input an unqualified jid, like bob
