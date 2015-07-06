@@ -36,6 +36,9 @@ xmpp_user=${JID[0]:-$xmpp_user}
 xmpp_pass=${2:-$xmpp_pass}
 xmpp_host=${JID[1]:-$xmpp_host}
 
+# Runtime Settings #
+XML_PRETTYPRINT_UTIL="xmllint"
+
 # Source font library #
 . font_simple.sh
 
@@ -59,6 +62,14 @@ if ! hash sendxmpp &>/dev/null; then
 	font red bold >&2
 	echo "Error - sendxmpp is not installed">&2
 	font >&2
+fi
+
+if ! hash xmllint &>/dev/null; then
+	font red bold >&2
+	echo "Error - xmllint (Deb pkg libxml2-utils) is not installed">&2
+	echo "      - XML pretty printing will be disabled">&2
+	font >&2
+	XML_PRETTYPRINT_UTIL=cat
 fi
 
 if [ ! -e ./xmppsend ]; then
@@ -109,11 +120,22 @@ send_xmppsend() {
 	fi
 }
 
+xml_prettyprint() {
+	case $XML_PRETTYPRINT_UTIL in
+		xmllint)
+			xmllint --format -
+			;;
+		*)
+			$XML_PRETTYPRINT_UTIL
+			;;
+	esac
+}
+
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
 send() {
 	send_sendxmpp $@
-	#send_xmppsend $@
+	#send_xmppsend $@ | xml_prettyprint
 }
 
 # This function allows you to input an unqualified jid, like bob
