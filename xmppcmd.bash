@@ -332,3 +332,24 @@ get_subscriptions() {
 	</iq>
 	EOF
 }
+
+# Get items for a node
+# get_items <node>
+get_items() {
+	local node=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_items <node>"
+		return 0
+	fi
+
+	local id=`newid`
+	send $id <<-EOF
+	<iq type='get'
+		id='$id'
+		to='pubsub.$xmpp_host'>
+		<query xmlns='http://jabber.org/protocol/disco#items' node='$node'/>
+	</iq>
+	EOF
+}
