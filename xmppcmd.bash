@@ -249,6 +249,24 @@ subscribe() {
 	EOF
 }
 
+# get_nodes
+get_nodes() {
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_nodes"
+		return 0
+	fi
+
+	local id=`newid`
+	send $id <<-EOF
+	<iq type='get'
+		id='$id'
+		to='pubsub.$xmpp_host'>
+		<query xmlns='http://jabber.org/protocol/disco#items'/>
+	</iq>
+	EOF
+}
+
 # get_subscriptions
 get_subscriptions() {
 	# check args
