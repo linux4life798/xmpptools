@@ -54,9 +54,17 @@ if (( DEBUG > 0 )); then
 fi
 
 # Check Utilities Needed #
+
 if ! hash sendxmpp &>/dev/null; then
 	font red bold >&2
 	echo "Error - sendxmpp is not installed">&2
+	font >&2
+fi
+
+if [ ! -e ./xmppsend ]; then
+	font red bold >&2
+	echo "Error - xmppsend is not built">&2
+	echo "      - run make">&2
 	font >&2
 fi
 
