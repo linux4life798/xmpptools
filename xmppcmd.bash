@@ -53,7 +53,7 @@ if (( DEBUG > 0 )); then
 	echo "pass=$xmpp_pass"
 fi
 
-# Check Utilities Needed #
+# Check for Utilities Needed #
 
 if ! hash sendxmpp &>/dev/null; then
 	font red bold >&2
