@@ -99,10 +99,13 @@ send_xmppsend() {
 	fi
 
 	if (( DEBUG < 1 )); then
-		# Silent Mode
+		# Silent Mode - Throw away debug info
 		./xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id} 2>/dev/null
 	else
+		# Show Debug Info - Display in blue
+		font blue >&2
 		./xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id}
+		font off >&2
 	fi
 }
 
