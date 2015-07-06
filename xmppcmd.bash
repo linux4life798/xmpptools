@@ -198,6 +198,29 @@ create() {
 	EOF
 }
 
+# Delete a node
+# delete <node>
+delete() {
+	local node=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: delete <node>"
+		return 0
+	fi
+
+	local id=`newid`
+	send $id <<-EOF
+	<iq type='set'
+		id='$id'
+		to='pubsub.$xmpp_host'>
+	  <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
+		<delete node='$node'/>
+	  </pubsub>
+	</iq>
+	EOF
+}
+
 # publish <node> <item_id> <item_content>
 publish() {
 	local node=$1
