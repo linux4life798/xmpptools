@@ -48,6 +48,7 @@ int all_message_handler(xmpp_conn_t * const conn,
     xmpp_ctx_t *ctx = (xmpp_ctx_t *)userdata;
 	xmpp_stanza_to_text(stanza, &rawtext, &rawtext_size);
 	fprintf(stdout, "%s\n", rawtext);
+	fflush(stdout);
 	xmpp_free(ctx, rawtext);
 
 	return 1;
@@ -68,18 +69,22 @@ int message_handler(xmpp_conn_t * const conn,
 	return 0;
 }
 
+/**
+ * xmppsend <jid> <pass> [stanza_id]
+ */
 int main(int argc, char **argv)
 {
     xmpp_ctx_t *ctx;
     xmpp_conn_t *conn;
     xmpp_log_t *log;
     char *jid, *pass, *host, *stanza_id;
+	unsigned short port = 0;
     char *xml;
     size_t xml_count;
 
-    /* take a jid and password on the command line */
+    /* take a jid, password, and optionally a stanza_id on the command line */
     if (argc < 3 || argc > 4) {
-        fprintf(stderr, "Usage: basic <jid> <pass> [stanza_id]\n\n");
+        fprintf(stderr, "Usage: xmppsend <jid> <pass> [stanza_id]\n\n");
         return 1;
     }
 
@@ -87,6 +92,7 @@ int main(int argc, char **argv)
     pass = argv[2];
     host = NULL;
 
+	/* if we should wait for response stanza id */
 	if (argc == 4) {
 		stanza_id = argv[3];
 	}
@@ -109,7 +115,7 @@ int main(int argc, char **argv)
     xmpp_conn_set_pass(conn, pass);
 
     /* initiate connection */
-    xmpp_connect_client(conn, host, 0, conn_handler, ctx);
+    xmpp_connect_client(conn, host, port, conn_handler, ctx);
 
     /* enter the event loop -
        our connect handler will trigger an exit */
