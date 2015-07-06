@@ -249,6 +249,29 @@ publish() {
 	EOF
 }
 
+# Purge all node items
+# purge <node>
+purge() {
+	local node=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: purge <node>"
+		return 0
+	fi
+
+	local id=`newid`
+	send $id <<-EOF
+	<iq type='set'
+		id='$id'
+		to='pubsub.$xmpp_host'>
+	  <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
+		<purge node='$node'/>
+	  </pubsub>
+	</iq>
+	EOF
+}
+
 # subscribe <node> <jid>
 subscribe() {
 	local node=$1
