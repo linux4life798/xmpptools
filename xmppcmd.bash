@@ -4,8 +4,8 @@
 #
 # Usage:
 # . xmppcmd.sh [jid] [pass]
-# The script can also get it's jid and password from the environemnt
-#  variables XMPP_JID and XMPP_PASS or form the defaults specified below.
+# The script can also get it's jid and password from the environment
+#  variables XMPP_JID and XMPP_PASS or from the defaults specified below.
 #
 # Description:
 # Upon sourcing, the startup script will try to assign user, host, and pass
@@ -24,13 +24,13 @@ DEFAULT_XMPP_PASS=bobspassword # Change This
 # Set DEBUG to default if environment doesn't set it
 DEBUG=${DEBUG:-$DEFAULT_DEBUG}
 
-# First try to set user, host, and pass from environemtn variable or default values #
+# First try to set user, host, and pass from environment variable or default values #
 JID=( ${XMPP_JID/@/ } ) ## break up jid into user and host
 xmpp_user=${JID[0]:-$DEFAULT_XMPP_USER}
 xmpp_pass=${XMPP_PASS:-$DEFAULT_XMPP_PASS}
 xmpp_host=${JID[1]:-$DEFAULT_XMPP_HOST}
 
-# Now, set user, host, pass from arguments if avaliable #
+# Now, set user, host, pass from arguments if available #
 JID=( ${1/@/ } ) ## break up jid into user and host
 xmpp_user=${JID[0]:-$xmpp_user}
 xmpp_pass=${2:-$xmpp_pass}
