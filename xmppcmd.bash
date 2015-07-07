@@ -357,6 +357,29 @@ subscribe() {
 	EOF
 }
 
+# unsubscribe <node> <jid>
+unsubscribe() {
+	local node=$1
+	local jid=$(qualify_jid $2)
+
+	# check args
+	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: unsubscribe <node> <jid>"
+		return 0
+	fi
+
+	local id=`newid`
+	send $id <<-EOF
+	<iq type='set'
+		id='$id'
+		to='pubsub.$xmpp_host'>
+		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
+			<unsubscribe node='$node' jid='$jid'/>
+		</pubsub>
+	</iq>
+	EOF
+}
+
 # get_nodes
 get_nodes() {
 	# check args
@@ -389,6 +412,36 @@ get_subscriptions() {
 		| stanza_pubsub \
 		| send_stanza_iq get
 }
+
+# Get a list of subscribers of a node
+# get_subscribers <node>
+get_subscribers() {
+	local node=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Get a list of subscribers of a given node" >&2
+		echo "Usage: get_subscribers <node>" >&2
+		return 0
+	fi
+
+	echo "<subscriptions node='$node'/>" \
+		| stanza_pubsub owner \
+		| send_stanza_iq get
+}
+
+# get_affiliations
+get_affiliations() {
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_affiliations"
+		return 0
+	fi
+
+	echo "<affiliations/>" \
+		| stanza_pubsub \
+		| send_stanza_iq get
+
 }
 
 # Get items for a node
