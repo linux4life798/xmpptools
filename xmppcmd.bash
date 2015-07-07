@@ -377,22 +377,18 @@ get_nodes() {
 
 # get_subscriptions
 get_subscriptions() {
+	local node=$1
+
 	# check args
 	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: get_subscriptions"
 		return 0
 	fi
 
-	local id=`newid`
-	send $id <<-EOF
-	<iq type='get'
-		id='$id'
-		to='pubsub.$xmpp_host'>
-	  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-		<subscriptions/>
-	  </pubsub>
-	</iq>
-	EOF
+	echo "<subscriptions node='$node'/>" \
+		| stanza_pubsub \
+		| send_stanza_iq get
+}
 }
 
 # Get items for a node
@@ -406,12 +402,6 @@ get_items() {
 		return 0
 	fi
 
-	local id=`newid`
-	send $id <<-EOF
-	<iq type='get'
-		id='$id'
-		to='pubsub.$xmpp_host'>
-		<query xmlns='http://jabber.org/protocol/disco#items' node='$node'/>
-	</iq>
-	EOF
+	echo "<query xmlns='http://jabber.org/protocol/disco#items' node='$node'/>" \
+		| send_stanza_iq get
 }
