@@ -152,6 +152,66 @@ qualify_jid() {
 	fi
 }
 
+# stanza_iq <type> [to]
+# Example: echo "<atom>blah</atom>" | send_stanza_iq get
+send_stanza_iq() {
+	local typ=$1
+	local to=$(qualify_jid ${2:-pubsub.$xmpp_host})
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: stanza_iq <type> [to]"
+		return 0
+	fi
+
+	local id=`newid`
+	{
+		# Head
+		cat <<-EOF
+		<iq type='$typ'
+			id='$id'
+			to='$to'>
+		EOF
+
+		# Body
+		cat
+
+		# Tail
+		cat <<-EOF
+		</iq>
+		EOF
+	} | send $id
+}
+
+# stanza_pubsub [owner]
+stanza_pubsub() {
+
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: stanza_pubsub [owner]"
+		return 0
+	fi
+
+	local ns="http://jabber.org/protocol/pubsub"
+
+	if [ $# -gt 0 ]; then
+		ns+="#owner"
+	fi
+
+	# Head
+	cat <<-EOF
+	<pubsub xmlns='$ns'>
+	EOF
+
+	# Body
+	cat
+
+	# Tail
+	cat <<-EOF
+	</pubsub>
+	EOF
+}
+
 # Generate a unique id
 newid() {
 	echo "xmppsend$RANDOM"
