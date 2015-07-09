@@ -459,6 +459,44 @@ get_affiliates() {
 		| send_stanza_iq get
 
 }
+
+# Set affiliations for a given node
+# Affiliation can be "owner", "member", "publisher", "publish-only", "outcast", or "none"
+# set_affiliations <node> <jid> <affiliation> [<jid2> <affiliation2>] [...]
+set_affiliations() {
+	local node=$1
+
+	# check args
+	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: set_affiliations <node> <jid> <affiliation> [<jid2> <affiliation2>] [...]" >&2
+		return 0
+	fi
+
+	shift 1
+
+	{
+		echo "<affiliations node='$node'>"
+
+		while [ $# -gt 0 ]; do
+			if [ $# -lt 2 ]; then
+				echo "Error - Impropper number of arguments" >&2
+				return 1
+			fi
+
+			local jid=$(qualify_jid $1)
+			local affiliation=$2
+			shift 2
+
+			echo "<affiliation jid='$jid' affiliation='$affiliation'/>"
+		done
+
+		echo "</affiliations>"
+	} \
+		| stanza_pubsub owner \
+		| send_stanza_iq set
+
+}
+
 # Get items for a node
 # get_items <node>
 get_items() {
