@@ -444,6 +444,21 @@ get_affiliations() {
 
 }
 
+# get_affiliates <node>
+get_affiliates() {
+	local node=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_affiliates <node>"
+		return 0
+	fi
+
+	echo "<affiliations node='$node'/>" \
+		| stanza_pubsub owner \
+		| send_stanza_iq get
+
+}
 # Get items for a node
 # get_items <node>
 get_items() {
