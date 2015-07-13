@@ -123,7 +123,9 @@ send_xmppsend() {
 xml_prettyprint() {
 	case $XML_PRETTYPRINT_UTIL in
 		xmllint)
-			xmllint --format -
+			# tail will kill the first line, which is an inserted xml version line
+			# we also kill errors emitted by xmllint
+			xmllint --format --recover - 2>/dev/null | tail -n +2
 			;;
 		*)
 			$XML_PRETTYPRINT_UTIL
