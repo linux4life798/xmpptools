@@ -243,7 +243,7 @@ xmpphelp() {
 	XMPP_CMDS+=( subscribe unsubscribe )
 	XMPP_CMDS+=( get_nodes get_subscriptions get_subscribers )
 	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations get_items )
-	XMPP_CMDS+=( get_vcard )
+	XMPP_CMDS+=( get_vcard set_vcard )
 	XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
 
 	font bold
@@ -562,4 +562,18 @@ get_vcard() {
 
 	echo "<vCard xmlns='vcard-temp'/>" \
 		| send_stanza_iq get $jid
+}
+
+# Set vCard info
+# cat <vcard_file> | set_vcard
+set_vcard() {
+
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: cat <vcard_file> | set_vcard"
+		return 0
+	fi
+
+	# file should have <vCard xmlns='vcard-temp'></vCard> inside
+	send_stanza_iq set ""
 }
