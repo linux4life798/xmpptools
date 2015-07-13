@@ -550,7 +550,7 @@ get_items() {
 }
 
 # Get vCard info for jid
-# get_items <jid>
+# get_vcard <jid>
 get_vcard() {
 	local jid=$(qualify_jid $1)
 
