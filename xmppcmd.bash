@@ -241,6 +241,7 @@ xmpphelp() {
 	XMPP_CMDS+=( subscribe unsubscribe )
 	XMPP_CMDS+=( get_nodes get_subscriptions get_subscribers )
 	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations get_items )
+	XMPP_CMDS+=( get_vcard )
 	XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
 
 	font bold
@@ -544,4 +545,19 @@ get_items() {
 
 	echo "<query xmlns='http://jabber.org/protocol/disco#items' node='$node'/>" \
 		| send_stanza_iq get
+}
+
+# Get vCard info for jid
+# get_items <jid>
+get_vcard() {
+	local jid=$(qualify_jid $1)
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_vcard <jid>"
+		return 0
+	fi
+
+	echo "<vCard xmlns='vcard-temp'/>" \
+		| send_stanza_iq get $jid
 }
