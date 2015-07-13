@@ -235,6 +235,22 @@ newid() {
 	echo "xmppsend$RANDOM"
 }
 
+# Show the help message
+xmpphelp() {
+	local XMPP_CMDS=( xmpphelp message create delete publish purge )
+	XMPP_CMDS+=( subscribe unsubscribe )
+	XMPP_CMDS+=( get_nodes get_subscriptions get_subscribers )
+	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations get_items )
+	XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
+
+	font bold
+	echo "Valid commands:"
+	font off
+	for i in ${XMPP_CMDS[@]}; do
+		echo "	$i"
+	done
+}
+
 # message <to> <message_body>
 message() {
 	local to=$(qualify_jid $1)
