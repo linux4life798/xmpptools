@@ -163,10 +163,11 @@ qualify_jid() {
 }
 
 # stanza_iq <type> [to]
+# Special functionality: if [to] is "", the to attribute is omitted
 # Example: echo "<atom>blah</atom>" | send_stanza_iq get
 send_stanza_iq() {
 	local typ=$1
-	local to=$(qualify_jid ${2:-pubsub.$xmpp_host})
+	local to=$(qualify_jid ${2-pubsub.$xmpp_host})
 
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
@@ -177,11 +178,18 @@ send_stanza_iq() {
 	local id=`newid`
 	{
 		# Head
-		cat <<-EOF
-		<iq type='$typ'
-			id='$id'
-			to='$to'>
-		EOF
+		if [ "$to" != "" ]; then
+			cat <<-EOF
+			<iq type='$typ'
+				id='$id'
+				to='$to'>
+			EOF
+		else
+			cat <<-EOF
+			<iq type='$typ'
+				id='$id'>
+			EOF
+		fi
 
 		# Body
 		cat
