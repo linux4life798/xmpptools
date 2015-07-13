@@ -148,12 +148,16 @@ send() {
 qualify_jid() {
 	local to=$1
 	if [[ "$to" =~ "@" ]]; then
+		# already qualified - pass through
 		echo "${to}"
 	elif [[ "$to" =~ "pubsub" ]]; then
+		# special pubsub - pass through
 		echo "${to}"
 	elif [ "$to" == "" ]; then
+		# special blank - pass through
 		echo "$to"
 	else
+		# unqualified jid - automatically qualify
 		echo "${to}@${xmpp_host}"
 	fi
 }
