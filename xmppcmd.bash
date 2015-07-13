@@ -151,6 +151,8 @@ qualify_jid() {
 		echo "${to}"
 	elif [[ "$to" =~ "pubsub" ]]; then
 		echo "${to}"
+	elif [ "$to" == "" ]; then
+		echo "$to"
 	else
 		echo "${to}@${xmpp_host}"
 	fi
