@@ -243,8 +243,9 @@ xmpphelp() {
 	XMPP_CMDS+=( get_jid get_pass )
 	XMPP_CMDS+=( message create delete publish purge )
 	XMPP_CMDS+=( subscribe unsubscribe )
-	XMPP_CMDS+=( get_nodes get_subscriptions get_subscribers )
-	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations get_items )
+	XMPP_CMDS+=( get_nodes get_items )
+	XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers )
+	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations )
 	XMPP_CMDS+=( get_vcard set_vcard )
 	XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
 
@@ -477,6 +478,44 @@ get_subscribers() {
 	echo "<subscriptions node='$node'/>" \
 		| stanza_pubsub owner \
 		| send_stanza_iq get
+}
+
+# Set subscribers for a given node
+# Subscription states can be "none", "pending", "unconfigured", or "subscribed"
+# See http://www.xmpp.org/extensions/xep-0060.html#substates
+# set_subscribers <node> <jid> <subscription_state> [<jid2> <subscription_state2>] [...]
+set_subscribers() {
+	local node=$1
+
+	# check args
+	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: set_subscribers <node> <jid> <affiliation> [<jid2> <affiliation2>] [...]" >&2
+		return 0
+	fi
+
+	shift 1
+
+	{
+		echo "<subscriptions node='$node'>"
+
+		while [ $# -gt 0 ]; do
+			if [ $# -lt 2 ]; then
+				echo "Error - Impropper number of arguments" >&2
+				return 1
+			fi
+
+			local jid=$(qualify_jid $1)
+			local subscription=$2
+			shift 2
+
+			echo "<subscription jid='$jid' subscription='$subscription'/>"
+		done
+
+		echo "</subscriptions>"
+	} \
+		| stanza_pubsub owner \
+		| send_stanza_iq set
+
 }
 
 # get_affiliations
