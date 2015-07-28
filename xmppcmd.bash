@@ -239,7 +239,9 @@ newid() {
 
 # Show the help message
 xmpphelp() {
-	local XMPP_CMDS=( xmpphelp message create delete publish purge )
+	local XMPP_CMDS=( xmpphelp )
+	XMPP_CMDS+=( get_jid get_pass )
+	XMPP_CMDS+=( message create delete publish purge )
 	XMPP_CMDS+=( subscribe unsubscribe )
 	XMPP_CMDS+=( get_nodes get_subscriptions get_subscribers )
 	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations get_items )
@@ -252,6 +254,16 @@ xmpphelp() {
 	for i in ${XMPP_CMDS[@]}; do
 		echo "	$i"
 	done
+}
+
+# Print out the active jid
+get_jid() {
+	echo ${xmpp_user}@${xmpp_host}
+}
+
+# Print out the active password
+get_pass() {
+	echo ${xmpp_pass}
 }
 
 # message <to> <message_body>
