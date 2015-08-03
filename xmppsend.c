@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 		/* we must omit the trailing '\0' */
 		xmpp_send_raw(conn, xml, strlen(xml));
 //		xmpp_send_raw_string(conn, xml);
-		fprintf(stderr, "Sending (%lu):\n%s\n", strlen(xml), xml);
+		fprintf(stderr, "Sending (%lu bytes):\n%s\n", strlen(xml), xml);
 	}
 	free(xml);
 
