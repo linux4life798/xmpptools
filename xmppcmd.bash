@@ -61,14 +61,14 @@ fi
 if ! hash sendxmpp &>/dev/null; then
 	font red bold >&2
 	echo "Error - sendxmpp is not installed">&2
-	font >&2
+	font off >&2
 fi
 
 if ! hash xmllint &>/dev/null; then
 	font red bold >&2
 	echo "Error - xmllint (Deb pkg libxml2-utils) is not installed">&2
 	echo "      - XML pretty printing will be disabled">&2
-	font >&2
+	font off >&2
 	XML_PRETTYPRINT_UTIL=cat
 fi
 
@@ -76,7 +76,7 @@ if [ ! -e ./xmppsend ]; then
 	font red bold >&2
 	echo "Error - xmppsend is not built">&2
 	echo "      - run make">&2
-	font >&2
+	font off >&2
 fi
 
 # Using the commandline utility sendxmpp
