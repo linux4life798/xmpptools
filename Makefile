@@ -6,5 +6,8 @@ LDFLAGS += -lstrophe
 
 all: xmppsend
 
+xmppsend: xmppsend.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
 clean:
 	$(RM) xmppsend
