@@ -1,0 +1,14 @@
+#!/bin/bash
+# Author: Craig Hesling
+# Date: August 5, 2015
+
+# import functions
+. ../xmppcmd.bash >/dev/null
+
+../xmpprecv bob@example.com bobspassword -p $@ | \
+	{
+		while read line; do
+			echo $line | xml_prettyprint
+			echo
+		done
+	}
