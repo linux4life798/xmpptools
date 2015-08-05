@@ -38,9 +38,10 @@ xmpp_host=${JID[1]:-$xmpp_host}
 
 # Runtime Settings #
 XML_PRETTYPRINT_UTIL="xmllint"
+XMPPTOOLS_DIR=`dirname $BASH_SOURCE`
 
 # Source font library #
-. font_simple.sh
+. $XMPPTOOLS_DIR/font_simple.sh
 
 # Print Configuration Settings #
 if (( DEBUG > 0 )); then
@@ -72,7 +73,7 @@ if ! hash xmllint &>/dev/null; then
 	XML_PRETTYPRINT_UTIL=cat
 fi
 
-if [ ! -e ./xmppsend ]; then
+if [ ! -e $XMPPTOOLS_DIR/xmppsend ]; then
 	font red bold >&2
 	echo "Error - xmppsend is not built">&2
 	echo "      - run make">&2
@@ -111,11 +112,11 @@ send_xmppsend() {
 
 	if (( DEBUG < 1 )); then
 		# Silent Mode - Throw away debug info
-		./xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id} 2>/dev/null
+		$XMPPTOOLS_DIR/xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id} 2>/dev/null
 	else
 		# Show Debug Info - Display in blue
 		font blue >&2
-		./xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id}
+		$XMPPTOOLS_DIR/xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id}
 		font off >&2
 	fi
 }
