@@ -10,6 +10,8 @@
 
 #include <strophe.h>
 
+#define XMPP_MESSAGE_SIZE_MAX 8192
+
 int ready = 0;
 int recv_response = 0;
 
@@ -129,9 +131,9 @@ int main(int argc, char **argv)
 	}
 //	xmpp_handler_add(conn, all_message_handler, NULL, "message", NULL, (void *)ctx);
 
-	xml = (char *) calloc(4096, sizeof('\0'));
-	while(xml_count = fread(xml, sizeof('\0'), 4095, stdin)) {
-		xml[4095] = '\0';
+	xml = (char *) calloc(XMPP_MESSAGE_SIZE_MAX, sizeof('\0'));
+	while(xml_count = fread(xml, sizeof('\0'), XMPP_MESSAGE_SIZE_MAX-1, stdin)) {
+		xml[XMPP_MESSAGE_SIZE_MAX-1] = '\0';
 		/* we must omit the trailing '\0' */
 		xmpp_send_raw(conn, xml, strlen(xml));
 //		xmpp_send_raw_string(conn, xml);
