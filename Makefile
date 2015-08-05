@@ -6,7 +6,8 @@ LDLIBS += -lstrophe
 
 .PHONY: all clean
 
-all: xmppsend
+all: xmppsend xmpprecv
 
 clean:
 	$(RM) xmppsend
+	$(RM) xmpprecv
