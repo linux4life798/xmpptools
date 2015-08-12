@@ -59,12 +59,6 @@ fi
 
 # Check for Utilities Needed #
 
-if ! hash sendxmpp &>/dev/null; then
-	font red bold >&2
-	echo "Error - sendxmpp is not installed">&2
-	font off >&2
-fi
-
 if ! hash xmllint &>/dev/null; then
 	font red bold >&2
 	echo "Error - xmllint (Deb pkg libxml2-utils) is not installed">&2
@@ -84,6 +78,15 @@ fi
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
 send_sendxmpp() {
+
+	# Check if sendxmpp is installed
+	if ! hash sendxmpp &>/dev/null; then
+		font red bold >&2
+		echo "Error - sendxmpp is not installed">&2
+		font off >&2
+		return
+	fi
+
 	if (( DEBUG > 0 )); then
 		font yellow >&2
 		echo "Sending from: $xmpp_user@$xmpp_host" >&2
