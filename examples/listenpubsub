@@ -2,10 +2,14 @@
 # Author: Craig Hesling
 # Date: August 5, 2015
 
+XMPP_JID=bob@example.com
+XMPP_PASS=bobspassword
+
+
 # import functions
 . ../xmppcmd.bash >/dev/null
 
-../xmpprecv bob@example.com bobspassword -p $@ | \
+../xmpprecv $XMPP_JID $XMPP_PASS -p $@ | \
 	{
 		while read line; do
 			echo $line | xml_prettyprint
