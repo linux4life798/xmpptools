@@ -48,7 +48,6 @@ font()
 	fi
 
 	for opt; do
-		#IFVERB2 echo "font: $opt" >&2
 		printf "${FONTS[$opt]}"
 	done
 }
