@@ -20,8 +20,8 @@ XMPPTOOLS=${XMPPTOOLS:-..}
 
 xml_newline() {
 	# We do a real newline for compatibility with OSX
-	sed 's/></\
-/g'
+	sed 's/></>\
+</g'
 }
 
 shift 2

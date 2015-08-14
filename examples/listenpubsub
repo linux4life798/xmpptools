@@ -22,8 +22,8 @@ XMPPTOOLS=${XMPPTOOLS:-..}
 
 xml_newline() {
 	# We do a real newline for compatibility with OSX
-	sed 's/></\
-/g'
+	sed 's/></>\
+</g'
 }
 
 $XMPPTOOOLS/xmpprecv `get_jid` `get_pass` -p $@ | \
