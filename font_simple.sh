@@ -44,12 +44,14 @@ font()
 {
 	# do nothing for old versions of BASH
 	if [ $ASSOC_SUPPORT -lt 1 ]; then
-		return
+		return 1
 	fi
 
 	for opt; do
 		printf "${FONTS[$opt]}"
 	done
+
+	return 0
 }
 
 # vim: syntax=sh ts=4
