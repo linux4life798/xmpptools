@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 //	xmpp_handler_add(conn, all_message_handler, NULL, "message", NULL, (void *)ctx);
 
 	xml = (char *) calloc(XMPP_MESSAGE_SIZE_MAX, sizeof('\0'));
-	while(xml_count = fread(xml, sizeof('\0'), XMPP_MESSAGE_SIZE_MAX-1, stdin)) {
+	while((xml_count = fread(xml, sizeof('\0'), XMPP_MESSAGE_SIZE_MAX-1, stdin))) {
 		xml[XMPP_MESSAGE_SIZE_MAX-1] = '\0';
 		/* we must omit the trailing '\0' */
 		xmpp_send_raw(conn, xml, strlen(xml));
