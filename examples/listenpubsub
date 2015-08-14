@@ -20,6 +20,12 @@ XMPPTOOLS=${XMPPTOOLS:-..}
 # import functions
 . $XMPPTOOLS/xmppcmd.bash $XMPP_JID $XMPP_PASS
 
+xml_newline() {
+	# We do a real newline for compatibility with OSX
+	sed 's/></\
+/g'
+}
+
 $XMPPTOOOLS/xmpprecv `get_jid` `get_pass` -p $@ | \
 	{
 		while read line; do
@@ -27,7 +33,7 @@ $XMPPTOOOLS/xmpprecv `get_jid` `get_pass` -p $@ | \
 			#echo $line
 
 			# Line Separated
-			echo $line | sed -e 's/></>\n</g'
+			echo $line | xml_newline
 
 			# Pretty Print
 			#echo $line | xml_prettyprint
