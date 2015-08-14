@@ -18,9 +18,9 @@ XMPP_PASS=${3:-$XMPP_PASS}
 XMPPTOOLS=${XMPPTOOLS:-..}
 
 # import functions
-. $XMPPTOOLS/xmppcmd.bash $XMPP_JID $XMPP_PASS >/dev/null
+. $XMPPTOOLS/xmppcmd.bash $XMPP_JID $XMPP_PASS
 
-$XMPPTOOOLS/xmpprecv $XMPP_JID $XMPP_PASS -p $@ | \
+$XMPPTOOOLS/xmpprecv `get_jid` `get_pass` -p $@ | \
 	{
 		while read line; do
 			# Raw Output
