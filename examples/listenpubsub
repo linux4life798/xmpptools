@@ -1,18 +1,37 @@
 #!/bin/bash
 # Author: Craig Hesling
-# Date: August 5, 2015
+# Date: August 6, 2015
+#
+# Usage: listenpubsub <node> [xmpp_jid [xmpp_pass]]
 
-XMPP_JID=bob@example.com
-XMPP_PASS=bobspassword
+# If xmpprc file, import XMPPTOOLS, XMPP_JID, and XMPP_PASS
+if [ -f xmpprc ]; then
+	. xmpprc
+fi
 
+# nodeid first argument
+NODE=$1
+# if no jid and pass specified use xmpprc or env
+XMPP_JID=${2:-$XMPP_JID}
+XMPP_PASS=${3:-$XMPP_PASS}
+# default to ..
+XMPPTOOLS=${XMPPTOOLS:-..}
 
 # import functions
-. ../xmppcmd.bash >/dev/null
+. $XMPPTOOLS/xmppcmd.bash $XMPP_JID $XMPP_PASS >/dev/null
 
-../xmpprecv $XMPP_JID $XMPP_PASS -p $@ | \
+$XMPPTOOOLS/xmpprecv $XMPP_JID $XMPP_PASS -p $@ | \
 	{
 		while read line; do
-			echo $line | xml_prettyprint
+			# Raw Output
+			#echo $line | sed 's/></>\n</g'
+
+			# Line Separated
+			echo $line | sed 's/></>\n</g'
+
+			# Pretty Print
+			#echo $line | xml_prettyprint
+
 			echo
 		done
 	}

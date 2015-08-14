@@ -1,20 +1,36 @@
 #!/bin/bash
 # Author: Craig Hesling
 # Date: August 5, 2015
+#
+# Usage: listenall [xmpp_jid [xmpp_pass [filter_name [filter_type [filter_ns]]]]]
 
-XMPP_JID=bob@example.com
-XMPP_PASS=bobspassword
+# If xmpprc file, import XMPPTOOLS, XMPP_JID, and XMPP_PASS
+if [ -f xmpprc ]; then
+	. xmpprc
+fi
+
+# if no jid and pass specified use xmpprc or env
+XMPP_JID=${1:-$XMPP_JID}
+XMPP_PASS=${2:-$XMPP_PASS}
+# default to ..
+XMPPTOOLS=${XMPPTOOLS:-..}
 
 # import functions
-. ../xmppcmd.bash >/dev/null
+. $XMPPTOOLS/xmppcmd.bash $XMPP_JID $XMPP_PASS
 
-../xmpprecv $XMPP_JID $XMPP_PASS -s | \
+shift 2
+$XMPPTOOLS/xmpprecv `get_jid` `get_pass` -s $@ | \
 	{
 		while read line; do
-			# raw ouput
-			echo $line
-			# attempt pretty print
+			# Raw Output
+			#echo $line | sed 's/></>\n</g'
+
+			# Line Separated
+			echo $line | sed 's/></>\n</g'
+
+			# Pretty Print
 			#echo $line | xml_prettyprint
+
 			echo
 		done
 	}
