@@ -24,10 +24,10 @@ $XMPPTOOOLS/xmpprecv `get_jid` `get_pass` -p $@ | \
 	{
 		while read line; do
 			# Raw Output
-			#echo $line | sed 's/></>\n</g'
+			#echo $line
 
 			# Line Separated
-			echo $line | sed 's/></>\n</g'
+			echo $line | sed -e 's/></>\n</g'
 
 			# Pretty Print
 			#echo $line | xml_prettyprint
