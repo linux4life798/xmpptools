@@ -133,8 +133,6 @@ int handler_pubsub(	xmpp_conn_t * const conn,
  */
 void sigint_handler(int sig) {
 	fprintf(stderr, "# Attempting exit\n");
-	fprintf(stderr, "# Hardkill timer set for 5 seconds\n");
-	alarm(5);
 	doExit = 1;
 }
 
