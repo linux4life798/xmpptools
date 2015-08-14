@@ -140,7 +140,9 @@ void sigint_handler(int sig) {
 
 
 /**
- * xmpprecv <jid> <pass> -h [name [type [ns]]]
+ * Standard Handler Filter:
+ * xmpprecv <jid> <pass> -s [name [type [ns]]]
+ * PubSub Filter:
  * xmpprecv <jid> <pass> -p <node>
  */
 int main(int argc, char **argv) {
@@ -156,9 +158,9 @@ int main(int argc, char **argv) {
 	size_t xml_count;
 
 	/* take a jid, password, action and options on the command line */
-	if (argc < 4 || argc > 7) {
+	if (argc < 4 || argc > 7 || (strcmp(argv[1], "--help")==0)) {
 		fprintf(stderr,
-				"Usage: xmpprecv <jid> <pass> [ -h [name [type [ns]]] | -p [node] ]\n\n");
+				"Usage: xmpprecv <jid> <pass> [ -s [name [type [ns]]] | -p [node] ]\n\n");
 		return 1;
 	}
 
@@ -174,7 +176,7 @@ int main(int argc, char **argv) {
 
 	/* setup action options/filters */
 	switch (action[1]) {
-	case 'h':
+	case 's':
 		fprintf(stderr, "Handler filter specified\n");
 		op1 = op2 = op3 = NULL;
 
@@ -234,7 +236,7 @@ int main(int argc, char **argv) {
 	/*-------- Opened Connection --------*/
 
 	switch (action[1]) {
-	case 'h':
+	case 's':
 		xmpp_handler_add(conn, handler_dump, op3, op1, op2, (void *) &hdata);
 		//xmpp_id_handler_add(conn, message_handler, stanza_id, (void *)ctx);
 		break;

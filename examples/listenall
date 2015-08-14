@@ -8,7 +8,7 @@ XMPP_PASS=bobspassword
 # import functions
 . ../xmppcmd.bash >/dev/null
 
-../xmpprecv $XMPP_JID $XMPP_PASS -h | \
+../xmpprecv $XMPP_JID $XMPP_PASS -s | \
 	{
 		while read line; do
 			# raw ouput
