@@ -154,8 +154,6 @@ int main(int argc, char **argv) {
 	const char *op1, *op2, *op3;
 	struct handler_data hdata;
 	unsigned short port = 0;
-	char *xml;
-	size_t xml_count;
 
 	/* take a jid, password, action and options on the command line */
 	if (argc < 4 || argc > 7 || (strcmp(argv[1], "--help")==0)) {
