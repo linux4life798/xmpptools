@@ -302,16 +302,9 @@ create() {
 		return 0
 	fi
 
-	local id=`newid`
-	send $id <<-EOF
-	<iq type='set'
-		id='$id'
-		to='pubsub.$xmpp_host'>
-		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
-		<create node='$node'/>
-		</pubsub>
-	</iq>
-	EOF
+	echo "<create node='$node'/>" \
+		| stanza_pubsub \
+		| send_stanza_iq set
 }
 
 # Delete a node
@@ -325,16 +318,9 @@ delete() {
 		return 0
 	fi
 
-	local id=`newid`
-	send $id <<-EOF
-	<iq type='set'
-		id='$id'
-		to='pubsub.$xmpp_host'>
-	  <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
-		<delete node='$node'/>
-	  </pubsub>
-	</iq>
-	EOF
+	echo "<delete node='$node'/>" \
+		| stanza_pubsub owner \
+		| send_stanza_iq set
 }
 
 # publish <node> <item_id> <item_content>
@@ -376,16 +362,9 @@ purge() {
 		return 0
 	fi
 
-	local id=`newid`
-	send $id <<-EOF
-	<iq type='set'
-		id='$id'
-		to='pubsub.$xmpp_host'>
-	  <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
-		<purge node='$node'/>
-	  </pubsub>
-	</iq>
-	EOF
+	echo "<purge node='$node'/>" \
+		| stanza_pubsub owner \
+		| send_stanza_iq set
 }
 
 # subscribe <node> <jid>
