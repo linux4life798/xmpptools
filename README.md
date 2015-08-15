@@ -1,3 +1,10 @@
+# Description
+This repository was intended to contain tools that allow you to quickly test and automate XMPP related things.
+
+* xmppcmd.bash - BASH sourceable library of functions to control XMPP and XEP-0060
+* xmppsend.c   - The utility program that is used to send stanzas to the XMPP server and wait for responses
+* xmpprecv.c   - The utility program that is used to receive stanzas from the XMPP server
+
 # Basic Usage
 
 ## Step 1
