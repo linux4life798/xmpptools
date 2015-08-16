@@ -1,0 +1,10 @@
+# This is an exmaple xmprc file.
+# 1) Fill in or comment out the variable below.
+# 2) Rename this file to xmpprc to enable it
+
+# Set the path to the xmpptools root directory
+XMPPTOOLS=..
+
+# Set the XMPP JID and Password
+XMPP_JID=bob@example.com
+XMPP_PASS=bobpassword
