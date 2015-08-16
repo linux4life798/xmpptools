@@ -1,4 +1,4 @@
-/**@file xmppsend.c
+/**@file xmpprecv.c
  * @author Craig Hesling <craig@hesling.com>
  * @date August 5, 2015
  * This is program is a utility to receive xmpp stanzas.
