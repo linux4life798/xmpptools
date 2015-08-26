@@ -95,6 +95,7 @@ int main(int argc, char **argv)
 	host = NULL;
 
 	/* if we should wait for response stanza id */
+	stanza_id = NULL;
 	if (argc == 4) {
 		stanza_id = argv[3];
 	}

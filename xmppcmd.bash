@@ -247,7 +247,7 @@ xmpphelp() {
 	XMPP_CMDS+=( get_jid get_pass )
 	XMPP_CMDS+=( message create delete publish purge )
 	XMPP_CMDS+=( subscribe unsubscribe )
-	XMPP_CMDS+=( get_nodes get_items )
+	XMPP_CMDS+=( get_nodes get_items get_item )
 	XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers )
 	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations )
 	XMPP_CMDS+=( get_vcard set_vcard )
@@ -560,6 +560,23 @@ get_items() {
 	fi
 
 	echo "<query xmlns='http://jabber.org/protocol/disco#items' node='$node'/>" \
+		| send_stanza_iq get
+}
+
+# Get item for a node
+# get_item <node> <item_id>
+get_item() {
+	local node=$1
+	local item_id=$2
+
+	# check args
+	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_item <node> <item_id>"
+		return 0
+	fi
+
+	echo "<items node='$node'><item id='$item_id'></item></items>" \
+		| stanza_pubsub \
 		| send_stanza_iq get
 }
 
