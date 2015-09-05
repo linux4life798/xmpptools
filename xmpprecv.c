@@ -1,7 +1,13 @@
 /**@file xmpprecv.c
  * @author Craig Hesling <craig@hesling.com>
  * @date August 5, 2015
- * This is program is a utility to receive xmpp stanzas.
+ * This is a utility to receive xmpp stanzas with the option
+ * to use tag name, type, namespace, or PubSub node as a filter.
+ *
+ * Standard Handler Filter:
+ * xmpprecv <jid> <pass> -s [name [type [ns]]]
+ * PubSub Filter:
+ * xmpprecv <jid> <pass> -p <node>
  */
 
 #include <stdio.h>

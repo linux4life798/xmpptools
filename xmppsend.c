@@ -1,7 +1,11 @@
 /**@file xmppsend.c
  * @author Craig Hesling <craig@hesling.com>
  * @date June 30, 2015
- * This is program is a utility to send and receive xmpp stanzas.
+ * This is a utility to send xmpp stanzas and optionally receive responses.
+ * The utility waits for a response with a given \a stanza_id when
+ * stanza_id is supplied.
+ *
+ * xmppsend <jid> <pass> [stanza_id]
  */
 
 #include <stdio.h>
