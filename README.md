@@ -26,6 +26,12 @@ get_nodes
 
 # How To*s / Examples
 
+## Get list of commands
+```bash
+xmpphelp
+```
+Note: Running any command with -h argument will present it's usage options.
+
 ## Create a node
 ```bash
 create craignode
