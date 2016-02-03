@@ -20,7 +20,7 @@ This repository was intended to contain tools that allow you to quickly test and
   The variables of interest are `DEFAULT_XMPP_USER`, `DEFAULT_XMPP_HOST`, and `DEFAULT_XMPP_PASS`.
   You will need to separate the JID into the USER and HOST parts.
 
-Of course, I am obligated to tell you that saving passwords in plain text is a bad idea, so watch your back.
+  Of course, I am obligated to tell you that saving passwords in plain text is a bad idea, so watch your back.
 
 # Basic Usage
 
