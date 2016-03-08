@@ -70,6 +70,9 @@ get_nodes
 
 # How To*s / Examples
 
+Below, I will show a few common commands.
+Look in the `examples` directory for scripting examples.
+
 ## Get list of commands
 ```bash
 xmpphelp
