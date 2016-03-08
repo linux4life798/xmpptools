@@ -1,3 +1,5 @@
+<img align="left" src="https://github.com/linux4life798/xmpptools/blob/master/res/XMPPTools_logo.png" width="128">
+
 # Description
 This repository was intended to contain tools that allow you to
 quickly test and automate XMPP related things.
@@ -132,4 +134,6 @@ EOF
 ```
 # Dev Notes
 
-Future work will pull in more functionality from command line xml parsers.
+Future work may include integrating more xml parsing functionality.
+
+Pull requests are MORE than welcome. There are still so many XMPP functions and extensions to include.
