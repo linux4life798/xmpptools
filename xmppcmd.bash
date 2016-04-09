@@ -564,20 +564,34 @@ get_items() {
 }
 
 # Get item for a node
-# get_item <node> <item_id>
+# get_item <node> <item_id> [item_id2 [item_id3...]]
 get_item() {
 	local node=$1
-	local item_id=$2
 
 	# check args
 	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: get_item <node> <item_id>"
+		echo "Usage: get_item <node> <item_id> [item_id2 [item_id3...]]"
 		return 0
 	fi
 
-	echo "<items node='$node'><item id='$item_id'></item></items>" \
+	shift 1
+
+	{
+		echo "<items node='$node'>"
+
+		while [ $# -gt 0 ]; do
+
+			local item_id=$1
+			shift 1
+
+			echo "<item id='$item_id' />"
+		done
+
+		echo "</items>"
+	} \
 		| stanza_pubsub \
 		| send_stanza_iq get
+
 }
 
 # Get vCard info for jid
