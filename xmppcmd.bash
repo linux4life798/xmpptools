@@ -351,7 +351,7 @@ publish() {
 
 		# Emit content to publish
 		if [ "$*" = "-" ]; then
-			cat
+			cat | sed 's/^[ \t]*//;s/[ \t]*$//'
 		else
 			echo $*
 		fi
