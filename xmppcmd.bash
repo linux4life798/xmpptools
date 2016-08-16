@@ -322,33 +322,49 @@ delete() {
 		| stanza_pubsub owner \
 		| send_stanza_iq set
 }
-
-# publish <node> <item_id> <item_content>
+#
+# publish <node> <item_id> [ <item_content> | - ]
 publish() {
 	local node=$1
 	local item_id=$2
 
 	# check args
 	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: publish <node> <item_id> <item_content>"
+		echo "Usage: publish <node> <item_id> [ <item_content> | - ]"
+		echo
+		echo "       Using the \"-\" indicates using stdin as item_content"
 		return 0
 	fi
 
 	shift 2
 	local id=`newid`
-	send $id <<-EOF
-	<iq type='set'
-		id='$id'
-		to='pubsub.$xmpp_host'>
-		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
-			<publish node='$node'>
-				<item id='$item_id'>
-					$*
-				</item>
-			</publish>
-		</pubsub>
-	</iq>
-	EOF
+	{
+		# Emit the beginning of the publish message
+		cat <<-EOF
+		<iq type='set'
+			id='$id'
+			to='pubsub.$xmpp_host'>
+			<pubsub xmlns='http://jabber.org/protocol/pubsub'>
+				<publish node='$node'>
+					<item id='$item_id'>
+		EOF
+
+		# Emit content to publish
+		if [ "$*" = "-" ]; then
+			cat
+		else
+			echo $*
+		fi
+
+		# Emit the ending of the publish message
+		cat <<-EOF
+					</item>
+				</publish>
+			</pubsub>
+		</iq>
+		EOF
+	} \
+		| send $id
 }
 
 # Purge all node items
