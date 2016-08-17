@@ -346,19 +346,19 @@ publish() {
 			to='pubsub.$xmpp_host'>
 			<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 				<publish node='$node'>
-					<item id='$item_id'>
 		EOF
+		echo -n "<item id='$item_id'>"
 
 		# Emit content to publish
 		if [ "$*" = "-" ]; then
 			cat | sed 's/^[ \t]*//;s/[ \t]*$//'
 		else
-			echo $*
+			echo -n $*
 		fi
 
 		# Emit the ending of the publish message
+		echo -n "</item>"
 		cat <<-EOF
-					</item>
 				</publish>
 			</pubsub>
 		</iq>
