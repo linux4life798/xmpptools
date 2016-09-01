@@ -638,3 +638,5 @@ set_vcard() {
 	# file should have <vCard xmlns='vcard-temp'></vCard> inside
 	send_stanza_iq set ""
 }
+
+# vim: syntax=sh ts=4

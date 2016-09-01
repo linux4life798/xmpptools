@@ -41,3 +41,5 @@ $XMPPTOOLS/xmpprecv `get_jid` `get_pass` -p $@ | \
 			echo
 		done
 	}
+
+# vim: syntax=sh ts=4

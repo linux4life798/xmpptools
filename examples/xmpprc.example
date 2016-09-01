@@ -8,3 +8,5 @@ XMPPTOOLS=..
 # Set the XMPP JID and Password
 XMPP_JID=bob@example.com
 XMPP_PASS=bobpassword
+
+# vim: syntax=sh ts=4
