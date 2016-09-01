@@ -319,6 +319,30 @@ get_jid() {
 	echo ${xmpp_user}@${xmpp_host}
 }
 
+# Set the active jid
+set_jid() {
+	local jid=( ${1/@/ } ) # separate at @
+	jid=( ${jid[@]/\// } ) # further separate at /
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: set_jid <jid>"
+		echo "Set the active JID to use"
+		return 0
+	fi
+
+	# Check that we have exactly two parts
+	if [ ${#jid[@]} -lt 2  -o  ${#jid[@]} -gt 3 ]; then
+		echo "Error - Invalid jid"
+		return 1
+	fi
+
+	xmpp_user=${jid[0]}
+	xmpp_host=${jid[1]}
+	# future support of resources starts here
+	#xmpp_res=${jid[2]}
+}
+
 # Print out the active password
 get_pass() {
 	# check args
@@ -329,6 +353,88 @@ get_pass() {
 	fi
 
 	echo ${xmpp_pass}
+}
+
+
+# Set the active password
+set_pass() {
+	local password="$1"
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: set_pass <password>"
+		echo "Set the active password to use"
+		return 0
+	fi
+
+	xmpp_pass="${password}"
+}
+
+# Print out the active pubsub host
+get_pubsub() {
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_pubsub"
+		echo "Print out the active pubsub host being used"
+		return 0
+	fi
+
+	echo ${xmpp_pubsub}
+}
+
+# Set the active pubsub host
+set_pubsub() {
+	local pubsub=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: set_pubsub < - | <pubsub_host> >"
+		echo "Set the active pubsub host to use"
+		echo "       Specify \"-\" to use the default pubsub for your host"
+		return 0
+	fi
+
+	if [ "$pubsub" = "-" ]; then
+		xmpp_pubsub="pubsub.${xmpp_host}"
+	else
+		xmpp_pubsub=${pubsub}
+	fi
+}
+
+# Show all current configuration settings
+get_config() {
+
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_config"
+		return 0
+	fi
+
+	font bold
+	echo "# General Settings #"
+	font off
+	echo "DEBUG=$DEBUG"
+	font bold
+	echo "# XMPP User Settings #"
+	font off
+	echo "user=$xmpp_user"
+	echo "host=$xmpp_host"
+	echo "pass=$xmpp_pass"
+	echo "pubsub=$xmpp_pubsub"
+	font bold
+	echo "# Extra Info #"
+	font off
+	echo -n "Run "
+	font yellow
+	echo -n "xmpphelp"
+	font off
+	echo " to show allowed commands."
+	echo -n "Run any command with "
+	font yellow
+	echo -n "--help"
+	font off
+	echo " to get usage information"
+	echo "xmpptools and xmppcmd version $XMPPCMD_VERSION"
 }
 
 # message <to> <message_body>
