@@ -210,22 +210,46 @@ newid() {
 
 # Show the help message
 xmpphelp() {
-	local XMPP_CMDS=( xmpphelp )
-	XMPP_CMDS+=( get_jid get_pass )
-	XMPP_CMDS+=( message create delete publish purge )
-	XMPP_CMDS+=( subscribe unsubscribe )
-	XMPP_CMDS+=( get_nodes get_items get_item )
-	XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers )
-	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations )
-	XMPP_CMDS+=( get_vcard set_vcard )
+	local XMPP_CMDS=( )
+
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: xmpphelp [command1 [command2 [...]]]"
+		echo "Get help with one or many commands"
+		return 0
+	fi
+
+	XMPP_CMDS+=( xmpphelp , )
+	XMPP_CMDS+=( pretty , )
+	XMPP_CMDS+=( get_config get_jid get_pass get_pubsub , )
+	XMPP_CMDS+=( message create delete publish purge , )
+	XMPP_CMDS+=( subscribe unsubscribe , )
+	XMPP_CMDS+=( get_nodes get_items get_item , )
+	XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers , )
+	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations , )
+	XMPP_CMDS+=( get_vcard set_vcard , )
 	XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
 
-	font bold
-	echo "Valid commands:"
-	font off
-	for i in ${XMPP_CMDS[@]}; do
-		echo "	$i"
-	done
+	if [ $# -gt 0 ]; then
+		# Get help for certain commands
+		for i; do
+			echo "$ $i --help"
+			$i --help
+			echo
+		done
+	else
+		# List off all commands
+		font bold
+		echo "Valid commands:"
+		font off
+		for i in ${XMPP_CMDS[@]}; do
+			if [ "$i" = "," ]; then
+				echo
+			else
+				echo "	$i"
+			fi
+		done
+	fi
 }
 
 # Set whether xml pretty printing is on or off
