@@ -74,6 +74,7 @@ if [ ! -e $XMPPTOOLS_DIR/xmppsend ]; then
 	font off >&2
 fi
 
+# DEPRECIATED method
 # Using the commandline utility sendxmpp
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
@@ -140,6 +141,13 @@ xml_prettyprint() {
 # echo "raw xml" | send
 # xmpp_user=tom echo "raw xml" | send
 send() {
+
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: send"
+		return 0
+	fi
+
 	#send_sendxmpp $@
 	if [ $# -gt 0 ]; then
 		send_xmppsend $@ | xml_prettyprint
@@ -263,11 +271,25 @@ xmpphelp() {
 
 # Print out the active jid
 get_jid() {
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_jid"
+		echo "Print out the active JID being used"
+		return 0
+	fi
+
 	echo ${xmpp_user}@${xmpp_host}
 }
 
 # Print out the active password
 get_pass() {
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_pass"
+		echo "Print out the active password being used"
+		return 0
+	fi
+
 	echo ${xmpp_pass}
 }
 
@@ -331,7 +353,7 @@ publish() {
 	# check args
 	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: publish <node> <item_id> [ <item_content> | - ]"
-		echo
+		echo "Publish content to a pubsub node"
 		echo "       Using the \"-\" indicates using stdin as item_content"
 		return 0
 	fi
@@ -391,6 +413,7 @@ subscribe() {
 	# check args
 	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: subscribe <node> <jid>"
+		echo "Subscribe \"jid\" to the pubsub \"node\""
 		return 0
 	fi
 
@@ -407,6 +430,7 @@ unsubscribe() {
 	# check args
 	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: unsubscribe <node> <jid>"
+		echo "Unsubscribe \"jid\" from the pubsub \"node\""
 		return 0
 	fi
 
@@ -420,6 +444,7 @@ get_nodes() {
 	# check args
 	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: get_nodes"
+		echo "Dump all nodes on the pubsub host"
 		return 0
 	fi
 
@@ -449,8 +474,8 @@ get_subscribers() {
 
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Get a list of subscribers of a given node" >&2
 		echo "Usage: get_subscribers <node>" >&2
+		echo "Get a list of subscribers of a given node" >&2
 		return 0
 	fi
 
