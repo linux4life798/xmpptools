@@ -125,7 +125,16 @@ send_xmppsend() {
 	fi
 }
 
+# Format and print xml given on stdin if enabled
+# echo "raw xml" | xml_prettyprint
 xml_prettyprint() {
+
+	# bypass pretty print util when disabled
+	if (( ! xml_pretty_enable )); then
+		cat
+		return 0
+	fi
+
 	case $XML_PRETTYPRINT_UTIL in
 		xmllint)
 			# tail will kill the first line, which is an inserted xml version line
@@ -267,6 +276,35 @@ xmpphelp() {
 	for i in ${XMPP_CMDS[@]}; do
 		echo "	$i"
 	done
+}
+
+# Set whether xml pretty printing is on or off
+pretty() {
+	local opt=$1
+
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: pretty [on | off]"
+		echo "Set whether xml pretty printing is on or off"
+		return 0
+	fi
+
+	case $opt in
+		"")
+			(( xml_pretty_enable )) && echo on || echo off
+			;;
+		on|1)
+			xml_pretty_enable=1
+			;;
+		off|0)
+			xml_pretty_enable=0
+			;;
+		*)
+			pretty --help
+			return 1
+			;;
+	esac
+
 }
 
 # Print out the active jid
@@ -664,4 +702,10 @@ set_vcard() {
 	send_stanza_iq set ""
 }
 
+
+##########################################################################
+##########################################################################
+
+
+xml_pretty_enable=1
 # vim: syntax=sh ts=4
