@@ -140,7 +140,7 @@ qualify_jid() {
 # Example: echo "<atom>blah</atom>" | send_stanza_iq get
 send_stanza_iq() {
 	local typ=$1
-	local to=$(qualify_jid ${2-pubsub.$xmpp_host})
+	local to=$(qualify_jid ${2-$xmpp_pubsub})
 
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
