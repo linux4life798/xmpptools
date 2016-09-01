@@ -722,14 +722,21 @@ get_items() {
 		| send_stanza_iq get
 }
 
-# Get item for a node
+# Get item(s) for a node
 # get_item <node> <item_id> [item_id2 [item_id3...]]
 get_item() {
 	local node=$1
 
 	# check args
-	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: get_item <node> <item_id> [item_id2 [item_id3...]]"
+		return 0
+	fi
+
+	# Add in secret shortcut to get all items
+	# Just type: get_items <node>
+	if (( $# == 1 )); then
+		get_items $node
 		return 0
 	fi
 
