@@ -42,6 +42,7 @@ void conn_handler(xmpp_conn_t * const conn, const xmpp_conn_event_t status,
 	else {
 		fprintf(stderr, "DEBUG: disconnected\n");
 		xmpp_stop(ctx);
+		exit(1);
 	}
 }
 
