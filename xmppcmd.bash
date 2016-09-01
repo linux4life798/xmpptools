@@ -23,6 +23,18 @@
 # overrides the ~/.config/xmpprc
 XMPPCMD_VERSION=2.0
 
+# Master list of user commands
+XMPP_CMDS=( )
+XMPP_CMDS+=( xmpphelp , )
+XMPP_CMDS+=( pretty , )
+XMPP_CMDS+=( get_config get_jid get_pass get_pubsub , )
+XMPP_CMDS+=( message create delete publish purge , )
+XMPP_CMDS+=( subscribe unsubscribe , )
+XMPP_CMDS+=( get_nodes get_items get_item , )
+XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers , )
+XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations , )
+XMPP_CMDS+=( get_vcard set_vcard , )
+XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
 
 # DEPRECIATED method
 # Using the commandline utility sendxmpp
@@ -211,7 +223,6 @@ newid() {
 # Show the help message
 alias xhelp='xmpphelp'
 xmpphelp() {
-	local XMPP_CMDS=( )
 
 	# check args
 	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
@@ -219,17 +230,6 @@ xmpphelp() {
 		echo "Get help with one or many commands"
 		return 0
 	fi
-
-	XMPP_CMDS+=( xmpphelp , )
-	XMPP_CMDS+=( pretty , )
-	XMPP_CMDS+=( get_config get_jid get_pass get_pubsub , )
-	XMPP_CMDS+=( message create delete publish purge , )
-	XMPP_CMDS+=( subscribe unsubscribe , )
-	XMPP_CMDS+=( get_nodes get_items get_item , )
-	XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers , )
-	XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations , )
-	XMPP_CMDS+=( get_vcard set_vcard , )
-	XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
 
 	if [ $# -gt 0 ]; then
 		# Get help for certain commands
