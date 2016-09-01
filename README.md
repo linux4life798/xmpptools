@@ -137,6 +137,7 @@ EOF
 ```
 # Dev Notes
 
-Future work may include integrating more xml parsing functionality.
+* Future work may include integrating more xml parsing functionality.
+* Future work may include more serious bash completions
 
 Pull requests are MORE than welcome. There are still so many XMPP functions and extensions to include.
