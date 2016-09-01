@@ -209,6 +209,7 @@ newid() {
 }
 
 # Show the help message
+alias xhelp='xmpphelp'
 xmpphelp() {
 	local XMPP_CMDS=( )
 
@@ -238,6 +239,8 @@ xmpphelp() {
 			echo
 		done
 	else
+		# Print help message
+		echo "Tip: You can use $(font yellow)xhelp$(font off) in place of xmpphelp."
 		# List off all commands
 		font bold
 		echo "Valid commands:"
