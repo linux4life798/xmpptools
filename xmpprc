@@ -1,0 +1,16 @@
+# This is an exmaple xmprc config file.
+# Fill in or comment out the BASH variable below.
+#
+# This file can reside in the local directory, wherever you source
+# xmppcmd.bash, or/and in ~/.config/xmpprc, as a global config.
+# See the documentation at the top of xmppcmd.bash for more information
+# on xmpprc config files.
+
+# Default Settings #
+DEFAULT_DEBUG=1 # Values: 0 1 2
+DEFAULT_XMPP_USER=bob          # Change this
+DEFAULT_XMPP_HOST=example.com  # Change this
+DEFAULT_XMPP_PASS=bobspassword # Change this
+#DEFAULT_XMPP_PUBSUB=pubsub.exmple.com
+
+# vim: syntax=sh ts=4
