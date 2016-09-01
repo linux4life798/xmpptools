@@ -1,78 +1,28 @@
 #!/bin/bash
 # Author: Craig Hesling <craig@hesling.com>
 # Date: June 30, 2015
+#       August 30, 2016
 #
 # Usage:
-# . xmppcmd.sh [jid] [pass]
-# The script can also get it's jid and password from the environment
-#  variables XMPP_JID and XMPP_PASS or from the defaults specified below.
+# . xmppcmd.sh [jid] [pass] [pubsub_host]
+# The script can also get it's jid, password, and pubsub host from
+#  the environment variables XMPP_JID, XMPP_PASS, and XMPP_PUBSUB
+#  OR from the defaults specified in a xmpprc file.
 #
 # Description:
-# Upon sourcing, the startup script will try to assign user, host, and pass
-# from the environment variables XMPP_JID and XMPP_PASS. If this fails, the
-# set default values are used. Next, the startup script will try to override
-# the user, host, and pass with argument supplied jid and pass. The previously
-# set values are used if no arguments are supplied.
+# Upon sourcing, the startup script will try to assign user, host, pass,
+# and pubsub server from the environment variables XMPP_JID, XMPP_PASS, and
+# XMPP_PUBSUB. If this fails, the default values from a local or
+# ~/.config/xmpprc file are used. Next, the startup script will try to
+# override the user, host, pass, and pubsub host with argument supplied jid,
+# pass, and pubsub host. The previously set values are used if no arguments
+# are supplied.
+# Settings:
+# Command line args override environmental vars, environmental vars override
+# an xmpprc in the working directory, and an xmpprc in the working directory
+# overrides the ~/.config/xmpprc
+XMPPCMD_VERSION=2.0
 
-# Default Settings #
-DEFAULT_DEBUG=1 # Values: 0 1 2
-DEFAULT_XMPP_USER=bob          # Change This
-DEFAULT_XMPP_HOST=example.com  # Change This
-DEFAULT_XMPP_PASS=bobspassword # Change This
-
-
-# Set DEBUG to default if environment doesn't set it
-DEBUG=${DEBUG:-$DEFAULT_DEBUG}
-
-# First try to set user, host, and pass from environment variable or default values #
-JID=( ${XMPP_JID/@/ } ) ## break up jid into user and host
-xmpp_user=${JID[0]:-$DEFAULT_XMPP_USER}
-xmpp_pass=${XMPP_PASS:-$DEFAULT_XMPP_PASS}
-xmpp_host=${JID[1]:-$DEFAULT_XMPP_HOST}
-
-# Now, set user, host, pass from arguments if available #
-JID=( ${1/@/ } ) ## break up jid into user and host
-xmpp_user=${JID[0]:-$xmpp_user}
-xmpp_pass=${2:-$xmpp_pass}
-xmpp_host=${JID[1]:-$xmpp_host}
-
-# Runtime Settings #
-XML_PRETTYPRINT_UTIL="xmllint"
-XMPPTOOLS_DIR=`dirname $BASH_SOURCE`
-
-# Source font library #
-. $XMPPTOOLS_DIR/font_simple.sh
-
-# Print Configuration Settings #
-if (( DEBUG > 0 )); then
-	font bold
-	echo "# General Settings #"
-	font off
-	echo "DEBUG=$DEBUG"
-	font bold
-	echo "# XMPP User Settings #"
-	font off
-	echo "user=$xmpp_user"
-	echo "host=$xmpp_host"
-	echo "pass=$xmpp_pass"
-fi
-
-# Check for Utilities Needed #
-
-if ! hash xmllint &>/dev/null; then
-	font red bold >&2
-	echo "Error - xmllint (Deb pkg libxml2-utils) is not installed">&2
-	echo "      - XML pretty printing will be disabled">&2
-	font off >&2
-	XML_PRETTYPRINT_UTIL=cat
-fi
-
-if [ ! -e $XMPPTOOLS_DIR/xmppsend ]; then
-	font red bold >&2
-	echo "Error - xmppsend is not built">&2
-	echo "      - run make">&2
-	font off >&2
-fi
 
 # DEPRECIATED method
 # Using the commandline utility sendxmpp
@@ -813,5 +763,86 @@ set_vcard() {
 ##########################################################################
 
 
+# Unset all DEFAULT_XMPP_* Settings for Reimporting xmpprc #
+unset DEFAULT_XMPP_USER
+unset DEFAULT_XMPP_PASS
+unset DEFAULT_XMPP_HOST
+unset DEFAULT_XMPP_PUBSUB
+
+# Fetch Default Settings - local xmpprc has override priority #
+if [ -f "$HOME/.config/xmpprc" ]; then
+	. $HOME/.config/xmpprc
+fi
+if [ -f xmpprc ]; then
+	. xmpprc
+fi
+
+# Set DEBUG to default if environment doesn't set it
+DEBUG=${DEBUG:-$DEFAULT_DEBUG}
+
+# First try to set user, host, pass, and pubsub from environment variable, #
+# then fallback on default values from the last xmpprc file sourced        #
+JID=( ${XMPP_JID/@/ } ) ## break up jid into user and host
+xmpp_user=${JID[0]:-$DEFAULT_XMPP_USER}
+xmpp_pass=${XMPP_PASS:-$DEFAULT_XMPP_PASS}
+xmpp_host=${JID[1]:-$DEFAULT_XMPP_HOST}
+# DEFAULT_XMPP_PUBSUB is implicit if DEFAULT_XMPP_HOST is set
+if [ -n "$DEFAULT_XMPP_HOST" ]; then
+	# set implicit if default was unset
+	DEFAULT_XMPP_PUBSUB=${DEFAULT_XMPP_PUBSUB:-pubsub.$DEFAULT_XMPP_HOST}
+fi
+xmpp_pubsub=${XMPP_PUBSUB:-$DEFAULT_XMPP_PUBSUB}
+
+# Now, override user, host, pass from arguments if available #
+JID=( ${1/@/ } ) ## break up jid into user and host
+xmpp_user=${JID[0]:-$xmpp_user}
+xmpp_pass=${2:-$xmpp_pass}
+xmpp_host=${JID[1]:-$xmpp_host}
+xmpp_pubsub=${3:-$xmpp_pubsub}
+
+# Runtime Settings #
+XML_PRETTYPRINT_UTIL="xmllint"
+XMPPTOOLS_DIR=`dirname $BASH_SOURCE`
 xml_pretty_enable=1
+
+# Source font library #
+. $XMPPTOOLS_DIR/font_simple.sh
+
+# Print Configuration Settings #
+
+if (( DEBUG > 0 )); then
+	get_config
+fi
+
+# Check for Utilities Needed #
+
+case $XML_PRETTYPRINT_UTIL in
+	xmllint)
+		if ! hash xmllint &>/dev/null; then
+			font red bold >&2
+			echo "Error - xmllint (Deb pkg libxml2-utils) is not installed">&2
+			echo "      - XML pretty printing will be disabled">&2
+			font off >&2
+			XML_PRETTYPRINT_UTIL=cat
+		fi
+		;;
+	*)
+		if ! hash $XML_PRETTYPRINT_UTIL &>/dev/null; then
+			font red bold >&2
+			echo "Error - $XML_PRETTYPRINT_UTIL cannot be found">&2
+			echo "      - XML pretty printing will be disabled">&2
+			font off >&2
+			XML_PRETTYPRINT_UTIL=cat
+		fi
+		;;
+esac
+
+if [ ! -e $XMPPTOOLS_DIR/xmppsend ]; then
+	font red bold >&2
+	echo "Error - xmppsend is not built">&2
+	echo "      - run make">&2
+	font off >&2
+fi
+
+
 # vim: syntax=sh ts=4
