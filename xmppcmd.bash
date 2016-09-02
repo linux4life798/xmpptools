@@ -592,21 +592,30 @@ subscribe() {
 	| send_stanza_iq set
 }
 
-# unsubscribe <node> <jid>
+# unsubscribe <node> [jid [subid]]
 unsubscribe() {
 	local node=$1
-	local jid=$(qualify_jid $2)
+	local jid=$(qualify_jid ${2-$xmpp_user})
+	local subid=$3
 
 	# check args
-	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: unsubscribe <node> <jid>"
-		echo "Unsubscribe \"jid\" from the pubsub \"node\""
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: unsubscribe <node> [jid [subid]]"
+		echo "Unsubscribe \"jid\" from the pubsub \"node\" with optional \"subid\""
 		return 0
 	fi
 
-	echo "<unsubscribe node='$node' jid='$jid'/>" \
+	if [ -n "$subid" ]; then
+		eof \
+		| stanza unsubscribe "node=$node" "jid=$jid" "subid=$subid" \
 		| stanza_pubsub \
 		| send_stanza_iq set
+	else
+		eof \
+		| stanza unsubscribe "node=$node" "jid=$jid" \
+		| stanza_pubsub \
+		| send_stanza_iq set
+	fi
 }
 
 # get_nodes
