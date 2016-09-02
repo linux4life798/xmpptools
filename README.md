@@ -28,6 +28,11 @@ xmpp functions with readily accessible coreutils.
 * xmppsend.c   - The utility program that is used to send stanzas to the XMPP server and wait for responses
 * xmpprecv.c   - The utility program that is used to receive stanzas from the XMPP server
 
+# Features
+* Pretty print XML output
+* BASH completions for node names and node item names (queries pubsub in background)
+* Global config and local config options
+
 # Setup
 
 1. Compilation <br />
