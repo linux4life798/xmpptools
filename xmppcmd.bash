@@ -34,7 +34,8 @@ XMPP_CMDS+=( get_nodes get_items get_item , )
 XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers , )
 XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations , )
 XMPP_CMDS+=( get_vcard set_vcard , )
-XMPP_CMDS+=( send send_stanza_iq stanza_pubsub )
+XMPP_CMDS+=( send send_stanza_iq stanza_pubsub , )
+XMPP_CMDS+=( recv )
 
 # DEPRECIATED method
 # Using the commandline utility sendxmpp
@@ -130,6 +131,11 @@ send() {
 		# no response
 		flatten_and_check | send_xmppsend
 	fi
+}
+
+# Open stream and listen on jid
+recv() {
+		$XMPPTOOLS_DIR/xmpprecv "${xmpp_user}@${xmpp_host}" ${xmpp_pass} -s
 }
 
 # This function allows you to input an unqualified jid, like bob
