@@ -173,6 +173,7 @@ send() {
 }
 
 # Open stream and listen on jid
+# recv < -s [name [type [ns]]] | -p [node] >
 recv() {
 		$XMPPTOOLS_DIR/xmpprecv "${xmpp_user}@${xmpp_host}" ${xmpp_pass} $@
 }
@@ -938,7 +939,7 @@ _complete_node_item() {
 
 
 _single_node() {
-	COMPREPLAY=( )
+	COMPREPLY=( )
 
 	# only complete first arg
 	if [ $COMP_CWORD -eq 1 ]; then
@@ -949,7 +950,7 @@ _single_node() {
 # Complete a fn that take a single node then an item
 _single_node_item() {
 	local node
-	COMPREPLAY=( )
+	COMPREPLY=( )
 
 	case $COMP_CWORD in
 		1)
@@ -964,7 +965,7 @@ _single_node_item() {
 
 _subscribe() {
 	local cur
-	COMPREPLAY=( )
+	COMPREPLY=( )
 
 	case $COMP_CWORD in
 		1)
@@ -983,7 +984,7 @@ _subscribe() {
 
 _unsubscribe() {
 	local cur
-	COMPREPLAY=( )
+	COMPREPLY=( )
 
 	case $COMP_CWORD in
 		1)
@@ -1002,7 +1003,7 @@ _unsubscribe() {
 
 _get_item() {
 	local node
-	COMPREPLAY=( )
+	COMPREPLY=( )
 
 	case $COMP_CWORD in
 		1)
@@ -1011,6 +1012,20 @@ _get_item() {
 		*)
 			node=${COMP_WORDS[1]}
 			_complete_node_item $node
+			;;
+	esac
+}
+
+_recv() {
+	COMPREPLY=( )
+	case $COMP_CWORD in
+		1)
+			COMPREPLY=( $(compgen -W "-s -p" -- ${COMP_WORDS[$COMP_CWORD]}) )
+			;;
+		2)
+			if [ "${COMP_WORDS[1]}" = "-p" ]; then
+				_complete_node
+			fi
 			;;
 	esac
 }
@@ -1128,9 +1143,10 @@ if (( COMPLEX_COMPLETIONS_ENABLED )); then
 	complete -F _get_item get_item
 	complete -F _single_node_item publish
 	complete -F _single_node_item retract
+	complete -F _recv recv
 else
 	{
-	complete -r delete 2
+	complete -r delete
 	complete -r purge
 	complete -r get_items
 	complete -r get_affiliates get_affiliations
@@ -1143,6 +1159,7 @@ else
 	complete -r get_item
 	complete -r publish
 	complete -r retract
+	complete -r recv
 	} 2>/dev/null
 fi
 
