@@ -79,10 +79,12 @@ send_xmppsend() {
 
 	if (( DEBUG < 1 )); then
 		# Silent Mode - Throw away debug info
+		timeout $SEND_TIMEOUT \
 		$XMPPTOOLS_DIR/xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id} 2>/dev/null
 	else
 		# Show Debug Info - Display in blue
 		font blue >&2
+		timeout $SEND_TIMEOUT \
 		$XMPPTOOLS_DIR/xmppsend "${xmpp_user}@${xmpp_host}" ${xmpp_pass} ${stanza_id}
 		font off >&2
 	fi
@@ -897,6 +899,7 @@ fi
 
 # Set DEBUG to default if environment doesn't set it
 DEBUG=${DEBUG:-$DEFAULT_DEBUG}
+SEND_TIMEOUT=${DEFAULT_SEND_TIMEOUT:-2s}
 
 # First try to set user, host, pass, and pubsub from environment variable, #
 # then fallback on default values from the last xmpprc file sourced        #
