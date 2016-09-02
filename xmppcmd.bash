@@ -38,6 +38,42 @@ XMPP_CMDS+=( send send_stanza_iq stanza_pubsub , )
 XMPP_CMDS+=( list_nodes , )
 XMPP_CMDS+=( recv )
 
+# Show the help message
+alias xhelp='xmpphelp'
+xmpphelp() {
+
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: xmpphelp [command1 [command2 [...]]]"
+		echo "Get help with one or many commands"
+		return 0
+	fi
+
+	if [ $# -gt 0 ]; then
+		# Get help for certain commands
+		for i; do
+			echo "$ $i --help"
+			$i --help
+			echo
+		done
+	else
+		# Print help message
+		echo "Tip: You can use $(font yellow)xhelp$(font off) in place of xmpphelp."
+		# List off all commands
+		font bold
+		echo "Valid commands:"
+		font off
+		for i in ${XMPP_CMDS[@]}; do
+			if [ "$i" = "," ]; then
+				echo
+			else
+				echo "	$i"
+			fi
+		done
+	fi
+}
+
+
 # DEPRECIATED method
 # Using the commandline utility sendxmpp
 # echo "raw xml" | send
@@ -161,10 +197,15 @@ qualify_jid() {
 	fi
 }
 
+# Generate a unique id
+newid() {
+	echo "xmppsend$RANDOM"
+}
+
 
 ##########################################################################
+#                   XML Stanza Manipulation Primitives                   #
 ##########################################################################
-
 
 # Sends an EOF to terminate a stream of stanzas
 eof() {
@@ -232,8 +273,6 @@ send_stanza_iq() {
 	stanza_iq "$typ" "$id" "$to" | send "$id"
 }
 
-
-
 # stanza_pubsub [owner]
 stanza_pubsub() {
 
@@ -264,45 +303,10 @@ stanza_query() {
 	fi
 }
 
-# Generate a unique id
-newid() {
-	echo "xmppsend$RANDOM"
-}
 
-# Show the help message
-alias xhelp='xmpphelp'
-xmpphelp() {
-
-	# check args
-	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: xmpphelp [command1 [command2 [...]]]"
-		echo "Get help with one or many commands"
-		return 0
-	fi
-
-	if [ $# -gt 0 ]; then
-		# Get help for certain commands
-		for i; do
-			echo "$ $i --help"
-			$i --help
-			echo
-		done
-	else
-		# Print help message
-		echo "Tip: You can use $(font yellow)xhelp$(font off) in place of xmpphelp."
-		# List off all commands
-		font bold
-		echo "Valid commands:"
-		font off
-		for i in ${XMPP_CMDS[@]}; do
-			if [ "$i" = "," ]; then
-				echo
-			else
-				echo "	$i"
-			fi
-		done
-	fi
-}
+##########################################################################
+#                        Runtime Config Interface                        #
+##########################################################################
 
 # Set whether xml pretty printing is on or off
 pretty() {
@@ -455,6 +459,11 @@ get_config() {
 	echo "get usage information."
 	echo "Version $XMPPCMD_VERSION"
 }
+
+
+##########################################################################
+#                        XMPP/PubSub Interface Level                     #
+##########################################################################
 
 # message <to> <message_body | ->
 message() {
@@ -872,7 +881,9 @@ set_vcard() {
 	send_stanza_iq set ""
 }
 
+
 ##########################################################################
+#                          High Level Functions                          #
 ##########################################################################
 
 list_nodes() {
@@ -882,7 +893,9 @@ list_nodes() {
 	echo
 }
 
+
 ##########################################################################
+#                     BASH Completion Handlers                           #
 ##########################################################################
 
 _NODES_CACHE=( )
@@ -979,9 +992,10 @@ _get_item() {
 	esac
 }
 
-##########################################################################
-##########################################################################
 
+##########################################################################
+#                             Init Routine                               #
+##########################################################################
 
 # Unset all DEFAULT_XMPP_* Settings for Reimporting xmpprc #
 unset DEFAULT_XMPP_USER
