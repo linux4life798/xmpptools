@@ -35,6 +35,7 @@ XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers , )
 XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations , )
 XMPP_CMDS+=( get_vcard set_vcard , )
 XMPP_CMDS+=( send send_stanza_iq stanza_pubsub , )
+XMPP_CMDS+=( list_nodes , )
 XMPP_CMDS+=( recv )
 
 # DEPRECIATED method
@@ -874,10 +875,109 @@ set_vcard() {
 ##########################################################################
 ##########################################################################
 
-complete -W "${XMPP_CMDS[*]/,/}" xmpphelp
-complete -W "${XMPP_CMDS[*]/,/}" xhelp
-complete -W "on off" pretty
-complete -W "owner" stanza_pubsub
+list_nodes() {
+	get_nodes \
+	| xmllint --xpath "/*[local-name() = 'iq']/*[local-name() = 'query']/*[local-name() = 'item']/@node" - \
+	| sed 's/ node=/\n/g;s/\"//g'
+	echo
+}
+
+##########################################################################
+##########################################################################
+
+_NODES_CACHE=( )
+
+_update_nodes_cache() {
+	_NODES_CACHE=( $( get_nodes 2>/dev/null | xmllint --xpath "/*[local-name() = 'iq']/*[local-name() = 'query']/*[local-name() = 'item']/@node" - 2>/dev/null | sed 's/node=//g;s/\"//g' 2>/dev/null ) )
+}
+
+_node_items() {
+	local node=$1
+	get_items $node 2>/dev/null | xmllint --xpath "/*[local-name() = 'iq']/*[local-name() = 'query']/*[local-name() = 'item']/@name" - | sed 's/ name=/\n/g;s/\"//g;s/$/\n/g'
+}
+
+_compgen_node() {
+	local cur=$1
+	_update_nodes_cache
+	compgen -W "${_NODES_CACHE[*]}" $cur
+}
+
+_complete_node() {
+	local cur
+	cur=${COMP_WORDS[COMP_CWORD]}
+	COMPREPLY+=( $( _compgen_node $cur ) )
+}
+
+_compgen_node_item() {
+	local node=$1
+	local cur=$2
+	IFS=$'\n' compgen -W "$(_node_items $node)" -- $cur
+}
+
+_complete_node_item() {
+	local node=$1
+	local cur
+	cur=${COMP_WORDS[COMP_CWORD]}
+	while read comp; do
+		COMPREPLY+=( "$comp" )
+	done < <(_compgen_node_item $node $cur)
+}
+
+
+_single_node() {
+	COMPREPLAY=( )
+
+	# only complete first arg
+	if [ $COMP_CWORD -eq 1 ]; then
+		_complete_node
+	fi
+}
+
+# Complete a fn that take a single node then an item
+_single_node_item() {
+	local node
+	COMPREPLAY=( )
+
+	case $COMP_CWORD in
+		1)
+			_complete_node
+			;;
+		2)
+			node=${COMP_WORDS[1]}
+			_complete_node_item $node
+			;;
+	esac
+}
+
+_unsubscribe() {
+	local cur
+	COMPREPLAY=( )
+
+	case $COMP_CWORD in
+		1)
+			_complete_node
+			;;
+		2)
+			# TODO: complete JID...
+			true
+			;;
+	esac
+}
+
+_get_item() {
+	local node
+	COMPREPLAY=( )
+
+	case $COMP_CWORD in
+		1)
+			_complete_node
+			;;
+		*)
+			node=${COMP_WORDS[1]}
+			_complete_node_item $node
+			;;
+	esac
+}
 
 ##########################################################################
 ##########################################################################
@@ -899,6 +999,7 @@ fi
 
 # Set DEBUG to default if environment doesn't set it
 DEBUG=${DEBUG:-$DEFAULT_DEBUG}
+COMPLEX_COMPLETIONS_ENABLED=${DEFAULT_COMPLEX_COMPLETIONS:-1}
 SEND_TIMEOUT=${DEFAULT_SEND_TIMEOUT:-2s}
 
 # First try to set user, host, pass, and pubsub from environment variable, #
@@ -972,5 +1073,43 @@ if [ ! -e $XMPPTOOLS_DIR/xmppsend ]; then
 	echo "      - run make">&2
 	font off >&2
 fi
+
+# Setup BASH Completions #
+
+if (( COMPLEX_COMPLETIONS_ENABLED )); then
+	complete -F _single_node delete
+	complete -F _single_node purge
+	complete -F _single_node get_items
+	complete -F _single_node get_affiliates
+	complete -F _single_node get_affiliations
+	complete -F _single_node set_affiliations # TODO: Fix details
+	complete -F _single_node get_subscriptions
+	complete -F _single_node get_subscribers
+	complete -F _single_node set_subscribers # TODO: Fix details
+	complete -F _unsubscribe unsubscribe
+	complete -F _get_item get_item
+	complete -F _single_node_item publish
+	complete -F _single_node_item retract
+else
+	{
+	complete -r delete 2
+	complete -r purge
+	complete -r get_items
+	complete -r get_affiliates get_affiliations
+	complete -r set_affiliations
+	complete -r get_subscriptions
+	complete -r get_subscribers
+	complete -r set_subscribers
+	complete -r unsubscribe
+	complete -r get_item
+	complete -r publish
+	complete -r retract
+	} 2>/dev/null
+fi
+
+complete -W "${XMPP_CMDS[*]/,/}" xmpphelp
+complete -W "${XMPP_CMDS[*]/,/}" xhelp
+complete -W "on off" pretty
+complete -W "owner" stanza_pubsub
 
 # vim: syntax=sh ts=4
