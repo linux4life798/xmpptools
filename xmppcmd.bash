@@ -240,18 +240,19 @@ stanza_pubsub() {
 		ns+="#owner"
 	fi
 
-	# Head
-	cat <<-EOF
-	<pubsub xmlns='$ns'>
-	EOF
+	stanza pubsub "xmlns=$ns"
+}
 
-	# Body
-	cat
+# stanza_query <items|info> [node]
+stanza_query() {
+	local typ=$1
+	local node=$2
 
-	# Tail
-	cat <<-EOF
-	</pubsub>
-	EOF
+	if [ -n "$node" ]; then
+		stanza query "xmlns=http://jabber.org/protocol/disco#$typ" "node=$node"
+	else
+		stanza query "xmlns=http://jabber.org/protocol/disco#$typ"
+	fi
 }
 
 # Generate a unique id
@@ -446,27 +447,32 @@ get_config() {
 	echo "Version $XMPPCMD_VERSION"
 }
 
-# message <to> <message_body>
+# message <to> <message_body | ->
 message() {
 	local to=$(qualify_jid $1)
 
 	# check args
 	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: message <to> <message_body>"
+		echo "Usage: message <to> <message_body | ->"
+		echo "Specify - to read body from stdin"
 		return 0
 	fi
 
 	shift 1
 	local id=`newid`
-	send <<-EOF
-	<message type='chat'
-			 id='$id'
-			 to='$to'>
-		<body>$*</body>
-	</message>
-	EOF
+	if [ "$*" = "-" ]; then
+		stanza body \
+		| stanza message "type=chat" "id=$id" "to=$to" \
+		| send
+	else
+		echo -n $* \
+		| stanza body \
+		| stanza message "type=chat" "id=$id" "to=$to" \
+		| send
+	fi
 }
 
+# Create a node
 # create <node>
 create() {
 	local node=$1
@@ -474,12 +480,14 @@ create() {
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: create <node>"
+		echo "Create a node"
 		return 0
 	fi
 
-	echo "<create node='$node'/>" \
-		| stanza_pubsub \
-		| send_stanza_iq set
+	eof \
+	| stanza create "node=$node" \
+	| stanza_pubsub \
+	| send_stanza_iq set
 }
 
 # Delete a node
@@ -490,12 +498,14 @@ delete() {
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: delete <node>"
+		echo "Delete a node"
 		return 0
 	fi
 
-	echo "<delete node='$node'/>" \
-		| stanza_pubsub owner \
-		| send_stanza_iq set
+	eof \
+	| stanza delete "node=$node" \
+	| stanza_pubsub owner \
+	| send_stanza_iq set
 }
 
 # publish <node> <item_id> < item_content | - >
@@ -512,29 +522,16 @@ publish() {
 	fi
 
 	shift 2
-	{
-		# Emit the beginning of the publish message
-		cat <<-EOF
-		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
-			<publish node='$node'>
-				<item id='$item_id'>
-		EOF
-
-		# Emit content to publish
-		if [ "$*" = "-" ]; then
-			cat
-		else
-			echo -n $*
-		fi
-
-		# Emit the ending of the publish message
-		cat <<-EOF
-				</item>
-			</publish>
-		</pubsub>
-		EOF
-	} \
-		| send_stanza_iq set
+	# Emit content to publish
+	if [ "$*" = "-" ]; then
+		cat
+	else
+		echo -n $*
+	fi \
+	| stanza item "id=$item_id" \
+	| stanza publish "node=$node" \
+	| stanza_pubsub \
+	| send_stanza_iq set
 }
 
 # Delete a node's item
@@ -628,7 +625,7 @@ get_nodes() {
 	fi
 
 	eof \
-	| stanza query "xmlns=http://jabber.org/protocol/disco#items" \
+	| stanza_query items \
 	| send_stanza_iq get
 }
 
@@ -691,26 +688,21 @@ set_subscribers() {
 
 	shift 1
 
-	{
-		echo "<subscriptions node='$node'>"
+	while [ $# -gt 0 ]; do
+		if [ $# -lt 2 ]; then
+			echo "Error - Impropper number of arguments" >&2
+			return 1
+		fi
 
-		while [ $# -gt 0 ]; do
-			if [ $# -lt 2 ]; then
-				echo "Error - Impropper number of arguments" >&2
-				return 1
-			fi
+		local jid=$(qualify_jid $1)
+		local subscription=$2
+		shift 2
 
-			local jid=$(qualify_jid $1)
-			local subscription=$2
-			shift 2
-
-			echo "<subscription jid='$jid' subscription='$subscription'/>"
-		done
-
-		echo "</subscriptions>"
-	} \
-		| stanza_pubsub owner \
-		| send_stanza_iq set
+		eof | stanza subscription "jid=$jid" "subscription=$subscription"
+	done \
+	| stanza subscriptions "node=$node" \
+	| stanza_pubsub owner \
+	| send_stanza_iq set
 
 }
 
@@ -774,26 +766,21 @@ set_affiliations() {
 
 	shift 1
 
-	{
-		echo "<affiliations node='$node'>"
+	while [ $# -gt 0 ]; do
+		if [ $# -lt 2 ]; then
+			echo "Error - Impropper number of arguments" >&2
+			return 1
+		fi
 
-		while [ $# -gt 0 ]; do
-			if [ $# -lt 2 ]; then
-				echo "Error - Impropper number of arguments" >&2
-				return 1
-			fi
+		local jid=$(qualify_jid $1)
+		local affiliation=$2
+		shift 2
 
-			local jid=$(qualify_jid $1)
-			local affiliation=$2
-			shift 2
-
-			echo "<affiliation jid='$jid' affiliation='$affiliation'/>"
-		done
-
-		echo "</affiliations>"
-	} \
-		| stanza_pubsub owner \
-		| send_stanza_iq set
+		eof | stanza affiliation "jid=$jid" "affiliation=$affiliation"
+	done \
+	| stanza affiliations "node=$node" \
+	| stanza_pubsub owner \
+	| send_stanza_iq set
 
 }
 
@@ -808,8 +795,9 @@ get_items() {
 		return 0
 	fi
 
-	echo "<query xmlns='http://jabber.org/protocol/disco#items' node='$node'/>" \
-		| send_stanza_iq get
+	eof \
+	| stanza_query items "$node" \
+	| send_stanza_iq get
 }
 
 # Get item(s) for a node
@@ -832,21 +820,16 @@ get_item() {
 
 	shift 1
 
-	{
-		echo "<items node='$node'>"
+	while [ $# -gt 0 ]; do
 
-		while [ $# -gt 0 ]; do
+		local item_id=$1
+		shift 1
 
-			local item_id=$1
-			shift 1
-
-			echo "<item id='$item_id' />"
-		done
-
-		echo "</items>"
-	} \
-		| stanza_pubsub \
-		| send_stanza_iq get
+		eof | stanza item "id=$item_id"
+	done \
+	| stanza items "node=$node" \
+	| stanza_pubsub \
+	| send_stanza_iq get
 
 }
 
@@ -861,8 +844,9 @@ get_vcard() {
 		return 0
 	fi
 
-	echo "<vCard xmlns='vcard-temp'/>" \
-		| send_stanza_iq get $jid
+	eof \
+	| stanza vCard "xmlns=vcard-temp" \
+	| send_stanza_iq get $jid
 }
 
 # Set vCard info
