@@ -574,21 +574,22 @@ purge() {
 	| send_stanza_iq set
 }
 
-# subscribe <node> <jid>
+# subscribe <node> [jid]
 subscribe() {
 	local node=$1
-	local jid=$(qualify_jid $2)
+	local jid=$(qualify_jid ${2-$xmpp_user})
 
 	# check args
-	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: subscribe <node> <jid>"
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: subscribe <node> [jid]"
 		echo "Subscribe \"jid\" to the pubsub \"node\""
 		return 0
 	fi
 
-	echo "<subscribe node='$node' jid='$jid'/>" \
-		| stanza_pubsub \
-		| send_stanza_iq set
+	eof \
+	| stanza subscribe "node=$node" "jid=$jid" \
+	| stanza_pubsub \
+	| send_stanza_iq set
 }
 
 # unsubscribe <node> <jid>
