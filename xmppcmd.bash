@@ -406,17 +406,10 @@ get_config() {
 	font bold
 	echo "# Extra Info #"
 	font off
-	echo -n "Run "
-	font yellow
-	echo -n "xmpphelp"
-	font off
-	echo " to show allowed commands."
-	echo -n "Run any command with "
-	font yellow
-	echo -n "--help"
-	font off
-	echo " to get usage information"
-	echo "xmpptools and xmppcmd version $XMPPCMD_VERSION"
+	echo "Run $(font yellow)xmpphelp$(font off) to show allowed commands."
+	echo -n "Run any command with $(font yellow)--help$(font off) to "
+	echo "get usage information."
+	echo "Version $XMPPCMD_VERSION"
 }
 
 # message <to> <message_body>
