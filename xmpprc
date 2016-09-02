@@ -7,7 +7,9 @@
 # on xmpprc config files.
 
 # Default Settings #
-DEFAULT_DEBUG=1 # Values: 0 1 2
+DEFAULT_DEBUG=1                # Values: 0 1 2
+DEFAULT_COMPLEX_COMPLETIONS=1  # Values: 0 1
+DEFAULT_SEND_TIMEOUT=10s       # Values: DURATION given to timeout command
 DEFAULT_XMPP_USER=bob          # Change this
 DEFAULT_XMPP_HOST=example.com  # Change this
 DEFAULT_XMPP_PASS=bobspassword # Change this
