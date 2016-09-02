@@ -551,10 +551,10 @@ retract() {
 	fi
 
 	eof \
-		| stanza item "id=$item_id" \
-		| stanza retract "node=$node" \
-		| stanza_pubsub \
-		| send_stanza_iq set
+	| stanza item "id=$item_id" \
+	| stanza retract "node=$node" \
+	| stanza_pubsub \
+	| send_stanza_iq set
 }
 
 # Purge all node items
@@ -568,9 +568,10 @@ purge() {
 		return 0
 	fi
 
-	echo "<purge node='$node'/>" \
-		| stanza_pubsub owner \
-		| send_stanza_iq set
+	eof \
+	| stanza purge "node=$node" \
+	| stanza_pubsub owner \
+	| send_stanza_iq set
 }
 
 # subscribe <node> <jid>
@@ -616,8 +617,9 @@ get_nodes() {
 		return 0
 	fi
 
-	echo "<query xmlns='http://jabber.org/protocol/disco#items'/>" \
-		| send_stanza_iq get
+	eof \
+	| stanza query "xmlns=http://jabber.org/protocol/disco#items" \
+	| send_stanza_iq get
 }
 
 # Get your subscription list OR subscriptions with a certain node
