@@ -187,8 +187,26 @@ stanza() {
 	fi
 }
 
+# stanza_iq <type> <id> [to]
+stanza_iq() {
+	local typ=$1
+	local id=$2
+	local to=$(qualify_jid ${3-$xmpp_pubsub})
 
-# stanza_iq <type> [to]
+	# check args
+	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: stanza_iq <type> <id> [to]"
+		return 0
+	fi
+
+	if [ -n "$to" ]; then
+		stanza iq "type=$typ" "id=$id" "to=$to"
+	else
+		stanza iq "type=$typ" "id=$id"
+	fi
+}
+
+# send_stanza_iq <type> [to]
 # Special functionality: if [to] is "", the to attribute is omitted
 # Example: echo "<atom>blah</atom>" | send_stanza_iq get
 send_stanza_iq() {
@@ -197,35 +215,15 @@ send_stanza_iq() {
 
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: stanza_iq <type> [to]"
+		echo "Usage: send_stanza_iq <type> [to]"
 		return 0
 	fi
 
 	local id=`newid`
-	{
-		# Head
-		if [ "$to" != "" ]; then
-			cat <<-EOF
-			<iq type='$typ'
-				id='$id'
-				to='$to'>
-			EOF
-		else
-			cat <<-EOF
-			<iq type='$typ'
-				id='$id'>
-			EOF
-		fi
-
-		# Body
-		cat
-
-		# Tail
-		cat <<-EOF
-		</iq>
-		EOF
-	} | send $id
+	stanza_iq "$typ" "$id" "$to" | send "$id"
 }
+
+
 
 # stanza_pubsub [owner]
 stanza_pubsub() {
