@@ -87,6 +87,10 @@ send_xmppsend() {
 	fi
 }
 
+fatten_and_check() {
+	xmllint --dropdtd --nowrap --noblanks - | tail -n +2
+}
+
 # Format and print xml given on stdin if enabled
 # echo "raw xml" | xml_prettyprint
 xml_prettyprint() {
@@ -121,9 +125,9 @@ send() {
 
 	#send_sendxmpp $@
 	if [ $# -gt 0 ]; then
-		send_xmppsend $@ | xml_prettyprint
+		fatten_and_check | send_xmppsend $@ | xml_prettyprint
 	else
-		send_xmppsend
+		flatten_and_check | send_xmppsend
 	fi
 }
 
@@ -466,48 +470,48 @@ delete() {
 		| send_stanza_iq set
 }
 #
-# publish <node> <item_id> [ <item_content> | - ]
+# publish <node> <item_id> < item_content | - >
 publish() {
 	local node=$1
 	local item_id=$2
 
 	# check args
 	if (( $# < 3 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: publish <node> <item_id> [ <item_content> | - ]"
+		echo "Usage: publish <node> <item_id> < item_content | - > "
 		echo "Publish content to a pubsub node"
 		echo "       Using the \"-\" indicates using stdin as item_content"
 		return 0
 	fi
 
 	shift 2
-	local id=`newid`
 	{
 		# Emit the beginning of the publish message
+		#cat | tr -d "\n" <<-EOF
 		cat <<-EOF
-		<iq type='set'
-			id='$id'
-			to='pubsub.$xmpp_host'>
-			<pubsub xmlns='http://jabber.org/protocol/pubsub'>
-				<publish node='$node'>
+		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
+			<publish node='$node'>
+				<item id='$item_id'>
 		EOF
-		echo -n "<item id='$item_id'>"
+		#echo -n "
 
 		# Emit content to publish
 		if [ "$*" = "-" ]; then
-			cat | sed 's/^[ \t]*//;s/[ \t]*$//'
+			# removes any beginning spaces or tab and trailing spaces and tabs
+			#cat | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d "\n"
+			cat
 		else
 			echo -n $*
 		fi
 
 		# Emit the ending of the publish message
-		echo -n "</item>"
+		#cat | tr -d "\n" <<-EOF
 		cat <<-EOF
-				</publish>
-			</pubsub>
-		</iq>
+				</item>
+			</publish>
+		</pubsub>
 		EOF
 	} \
-		| send $id
+		| send_stanza_iq set
 }
 
 # Purge all node items
@@ -856,6 +860,14 @@ if (( DEBUG > 0 )); then
 fi
 
 # Check for Utilities Needed #
+
+# we now require xmllint for flattening xml before sending
+if ! hash xmllint &>/dev/null; then
+	font red bold >&2
+	echo "Error - xmllint (Deb pkg libxml2-utils) is not installed">&2
+	echo "      - this is required for processing xml before sending">&2
+	font off >&2
+fi
 
 case $XML_PRETTYPRINT_UTIL in
 	xmllint)
