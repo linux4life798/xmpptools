@@ -152,6 +152,42 @@ qualify_jid() {
 	fi
 }
 
+
+##########################################################################
+##########################################################################
+
+
+# Sends an EOF to terminate a stream of stanzas
+eof() {
+	printf ""
+}
+
+# Core XML stanza building block
+# stanza <tag> [key=value [key2=value2 [...]]]
+stanza() {
+	local tag=$1
+	local attrs=""
+
+	shift 1
+	for attr; do
+		# place 's around the key's value
+		attrs+=" $(echo $attr | sed "s/=/='/g;s/\$/'/g")"
+	done
+
+	# try first char
+	read -N1 firstchar
+
+	if [ -z "$firstchar" ]; then
+		printf "<${tag}${attrs:- }/>"
+	else
+		printf "<${tag}${attrs}>"
+		printf "${firstchar}"
+		cat
+		printf "</${tag}>"
+	fi
+}
+
+
 # stanza_iq <type> [to]
 # Special functionality: if [to] is "", the to attribute is omitted
 # Example: echo "<atom>blah</atom>" | send_stanza_iq get
