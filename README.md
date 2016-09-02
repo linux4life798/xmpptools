@@ -30,7 +30,7 @@ xmpp functions with readily accessible coreutils.
 
 # Features
 * Pretty print XML output
-* BASH completions for node names and node item names (queries pubsub in background)
+* BASH tab completions for node names and node item names (queries pubsub in background)
 * Global config and local config options
 
 # Setup
