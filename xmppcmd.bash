@@ -620,19 +620,29 @@ get_nodes() {
 		| send_stanza_iq get
 }
 
-# get_subscriptions
+# Get your subscription list OR subscriptions with a certain node
+# get_subscriptions [node]
 get_subscriptions() {
 	local node=$1
 
 	# check args
 	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: get_subscriptions"
+		echo "Usage: get_subscriptions [node]"
+		echo "Get your subscription list OR subscriptions with a certain node"
 		return 0
 	fi
 
-	echo "<subscriptions node='$node'/>" \
+	if [ -n "$node" ]; then
+		eof \
+		| stanza subscriptions "node=$node" \
 		| stanza_pubsub \
 		| send_stanza_iq get
+	else
+		eof \
+		| stanza subscriptions  \
+		| stanza_pubsub \
+		| send_stanza_iq get
+	fi
 }
 
 # Get a list of subscribers of a node
@@ -642,14 +652,16 @@ get_subscribers() {
 
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: get_subscribers <node>" >&2
-		echo "Get a list of subscribers of a given node" >&2
+		echo "Usage: get_subscribers <node>"
+		echo "Get a list of subscribers of a given node"
+		echo "You must be owner of the node"
 		return 0
 	fi
 
-	echo "<subscriptions node='$node'/>" \
-		| stanza_pubsub owner \
-		| send_stanza_iq get
+	eof \
+	| stanza subscriptions "node=$node" \
+	| stanza_pubsub owner \
+	| send_stanza_iq get
 }
 
 # Set subscribers for a given node
