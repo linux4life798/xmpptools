@@ -174,7 +174,7 @@ send() {
 
 # Open stream and listen on jid
 recv() {
-		$XMPPTOOLS_DIR/xmpprecv "${xmpp_user}@${xmpp_host}" ${xmpp_pass} -s
+		$XMPPTOOLS_DIR/xmpprecv "${xmpp_user}@${xmpp_host}" ${xmpp_pass} $@
 }
 
 # This function allows you to input an unqualified jid, like bob
