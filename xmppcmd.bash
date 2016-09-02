@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: Craig Hesling <craig@hesling.com>
 # Date: June 30, 2015
-#       August 30, 2016
+#       September 1, 2016
 #
 # Usage:
 # . xmppcmd.sh [jid] [pass] [pubsub_host]
@@ -123,10 +123,11 @@ send() {
 		return 0
 	fi
 
-	#send_sendxmpp $@
 	if [ $# -gt 0 ]; then
+		# wait for response and format response
 		fatten_and_check | send_xmppsend $@ | xml_prettyprint
 	else
+		# no response
 		flatten_and_check | send_xmppsend
 	fi
 }
@@ -469,7 +470,7 @@ delete() {
 		| stanza_pubsub owner \
 		| send_stanza_iq set
 }
-#
+
 # publish <node> <item_id> < item_content | - >
 publish() {
 	local node=$1
@@ -486,25 +487,20 @@ publish() {
 	shift 2
 	{
 		# Emit the beginning of the publish message
-		#cat | tr -d "\n" <<-EOF
 		cat <<-EOF
 		<pubsub xmlns='http://jabber.org/protocol/pubsub'>
 			<publish node='$node'>
 				<item id='$item_id'>
 		EOF
-		#echo -n "
 
 		# Emit content to publish
 		if [ "$*" = "-" ]; then
-			# removes any beginning spaces or tab and trailing spaces and tabs
-			#cat | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d "\n"
 			cat
 		else
 			echo -n $*
 		fi
 
 		# Emit the ending of the publish message
-		#cat | tr -d "\n" <<-EOF
 		cat <<-EOF
 				</item>
 			</publish>
