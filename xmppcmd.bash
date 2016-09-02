@@ -87,7 +87,7 @@ send_xmppsend() {
 	fi
 }
 
-fatten_and_check() {
+flatten_and_check() {
 	xmllint --dropdtd --nowrap --noblanks - | tail -n +2
 }
 
@@ -125,7 +125,7 @@ send() {
 
 	if [ $# -gt 0 ]; then
 		# wait for response and format response
-		fatten_and_check | send_xmppsend $@ | xml_prettyprint
+		flatten_and_check | send_xmppsend $@ | xml_prettyprint
 	else
 		# no response
 		flatten_and_check | send_xmppsend
