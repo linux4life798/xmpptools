@@ -7,6 +7,11 @@
 # Import xmpptools
 . xmppcmd.bash $@
 
+# TODO: Fix timestamp
+timestamp() {
+	echo 2016-09-01T16:47:06.173118-0500
+}
+
 # meta_get craignode > meta.xml
 meta_get() {
 	local node=$1
@@ -66,6 +71,33 @@ storage_get() {
 	echo
 }
 
+# mio_pub
+mio_pub() {
+	local node=$1
+	local transducer="$2"
+	local value="$3"
+	local timestamp=`timestamp`
+
+	eof \
+	| stanza transducerData "value=$value" "name=$transducer" "timestamp=$timestamp" \
+	| publish $node "_${transducer}" -
+
+	#<transducerData value="1.000000" name="Door State" timestamp="2016-09-01T16:47:06.173118-0500"/>
+}
+
+# mio_act
+mio_act() {
+	local node=$1
+	local transducer="$2"
+	local value="$3"
+	local timestamp=`timestamp`
+
+	eof \
+	| stanza transducerSetData "value=$value" "name=$transducer" "timestamp=$timestamp" \
+	| publish "${node}_act" "_${transducer}" -
+
+	#<transducerSetData value="1" name="Door State" timestamp="2016-09-01T17:47:05.078179-0400"/>
+}
 # Setup BASH Completions #
 
 if (( COMPLEX_COMPLETIONS_ENABLED )); then
@@ -76,6 +108,9 @@ if (( COMPLEX_COMPLETIONS_ENABLED )); then
 	complete -F _single_node ref_set
 	complete -F _single_node ref_edit
 	complete -F _single_node storage_get
+	#complete -F _single_node_item mio_publish
+	complete -F _single_node mio_pub
+	complete -F _single_node mio_act
 else
 	{
 	complete -r meta_get
@@ -85,6 +120,8 @@ else
 	complete -r ref_set
 	complete -r ref_edit
 	complete -r storage_get
+	complete -r mio_pub
+	complete -r mio_act
 	} 2> /dev/null
 fi
 
