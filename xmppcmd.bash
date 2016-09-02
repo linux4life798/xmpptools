@@ -962,6 +962,25 @@ _single_node_item() {
 	esac
 }
 
+_subscribe() {
+	local cur
+	COMPREPLAY=( )
+
+	case $COMP_CWORD in
+		1)
+			_complete_node
+			;;
+		2)
+			# TODO: complete JID...
+			true
+			;;
+		3)
+			# TODO: complete subid...
+			true
+			;;
+	esac
+}
+
 _unsubscribe() {
 	local cur
 	COMPREPLAY=( )
@@ -972,6 +991,10 @@ _unsubscribe() {
 			;;
 		2)
 			# TODO: complete JID...
+			true
+			;;
+		3)
+			# TODO: complete subid...
 			true
 			;;
 	esac
@@ -1100,6 +1123,7 @@ if (( COMPLEX_COMPLETIONS_ENABLED )); then
 	complete -F _single_node get_subscriptions
 	complete -F _single_node get_subscribers
 	complete -F _single_node set_subscribers # TODO: Fix details
+	complete -F _subscribe subscribe
 	complete -F _unsubscribe unsubscribe
 	complete -F _get_item get_item
 	complete -F _single_node_item publish
@@ -1114,6 +1138,7 @@ else
 	complete -r get_subscriptions
 	complete -r get_subscribers
 	complete -r set_subscribers
+	complete -r subscribe
 	complete -r unsubscribe
 	complete -r get_item
 	complete -r publish
