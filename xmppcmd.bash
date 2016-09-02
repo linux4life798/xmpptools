@@ -21,7 +21,7 @@
 # Command line args override environmental vars, environmental vars override
 # an xmpprc in the working directory, and an xmpprc in the working directory
 # overrides the ~/.config/xmpprc
-XMPPCMD_VERSION=2.0
+XMPPCMD_VERSION=2.1
 
 # Master list of user commands
 XMPP_CMDS=( )
