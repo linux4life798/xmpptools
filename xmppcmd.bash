@@ -690,20 +690,33 @@ set_subscribers() {
 
 }
 
-# get_affiliations
+# Get you own affiliations list OR affiliation with a certain node"
+# get_affiliations [node]
 get_affiliations() {
+	local node=$1
+
 	# check args
 	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
-		echo "Usage: get_affiliations"
+		echo "Usage: get_affiliations [node]"
+		echo "Get you own affiliations list OR affiliation with a certain node"
 		return 0
 	fi
 
-	echo "<affiliations/>" \
+	if [ -n "$node" ]; then
+		eof \
+		| stanza affiliations "node=$node"\
 		| stanza_pubsub \
 		| send_stanza_iq get
+	else
+		eof \
+		| stanza affiliations \
+		| stanza_pubsub \
+		| send_stanza_iq get
+	fi
 
 }
 
+# Get ALL affiliations of a certain node
 # get_affiliates <node>
 get_affiliates() {
 	local node=$1
@@ -711,12 +724,15 @@ get_affiliates() {
 	# check args
 	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: get_affiliates <node>"
+		echo "Get ALL affiliations of a certain node."
+		echo "You must be an owner of the node"
 		return 0
 	fi
 
-	echo "<affiliations node='$node'/>" \
-		| stanza_pubsub owner \
-		| send_stanza_iq get
+	eof \
+	| stanza affiliations "node=$node" \
+	| stanza_pubsub owner \
+	| send_stanza_iq get
 
 }
 
