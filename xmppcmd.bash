@@ -173,6 +173,7 @@ send() {
 }
 
 # Open stream and listen on jid
+# recv < -s [name [type [ns]]] | -p [node] >
 recv() {
 		$XMPPTOOLS_DIR/xmpprecv "${xmpp_user}@${xmpp_host}" ${xmpp_pass} $@
 }
@@ -1015,6 +1016,20 @@ _get_item() {
 	esac
 }
 
+_recv() {
+	COMPREPLY=( )
+	case $COMP_CWORD in
+		1)
+			COMPREPLY=( $(compgen -W "-s -p" -- ${COMP_WORDS[$COMP_CWORD]}) )
+			;;
+		2)
+			if [ "${COMP_WORDS[1]}" = "-p" ]; then
+				_complete_node
+			fi
+			;;
+	esac
+}
+
 
 ##########################################################################
 #                             Init Routine                               #
@@ -1128,6 +1143,7 @@ if (( COMPLEX_COMPLETIONS_ENABLED )); then
 	complete -F _get_item get_item
 	complete -F _single_node_item publish
 	complete -F _single_node_item retract
+	complete -F _recv recv
 else
 	{
 	complete -r delete
@@ -1143,6 +1159,7 @@ else
 	complete -r get_item
 	complete -r publish
 	complete -r retract
+	complete -r recv
 	} 2>/dev/null
 fi
 
