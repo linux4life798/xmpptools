@@ -28,7 +28,7 @@ XMPP_CMDS=( )
 XMPP_CMDS+=( xmpphelp , )
 XMPP_CMDS+=( pretty , )
 XMPP_CMDS+=( get_config get_jid get_pass get_pubsub , )
-XMPP_CMDS+=( message create delete publish purge , )
+XMPP_CMDS+=( message create delete publish retract purge , )
 XMPP_CMDS+=( subscribe unsubscribe , )
 XMPP_CMDS+=( get_nodes get_items get_item , )
 XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers , )
@@ -539,6 +539,26 @@ publish() {
 		| send_stanza_iq set
 }
 
+# Delete a node's item
+# retract <node> <item_id>
+retract() {
+	local node=$1
+	local item_id=$2
+
+	# check args
+	if (( $# < 2 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: retract <node> <item_id>"
+		echo "Deletes the item with \"item_id\" from \"node\""
+		return 0
+	fi
+
+	eof \
+		| stanza item "id=$item_id" \
+		| stanza retract "node=$node" \
+		| stanza_pubsub \
+		| send_stanza_iq set
+}
+
 # Purge all node items
 # purge <node>
 purge() {
@@ -921,6 +941,5 @@ if [ ! -e $XMPPTOOLS_DIR/xmppsend ]; then
 	echo "      - run make">&2
 	font off >&2
 fi
-
 
 # vim: syntax=sh ts=4
