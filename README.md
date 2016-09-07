@@ -45,16 +45,16 @@ xmpp functions with readily accessible coreutils.
       two new binaries, xmppsend and xmpprecv.
 
 2. Setting Defaults [optional] <br />
-  Setting the default JID and password makes using this tool even more convientient.
-  You can set a default JID and password near the top of the main xmppcmd.bash file.
+  Setting the default JID and password makes using this tool even more convenient.
+  You can set a default JID and password in the xmpprc file.
   The variables of interest are `DEFAULT_XMPP_USER`, `DEFAULT_XMPP_HOST`, and `DEFAULT_XMPP_PASS`.
   You will need to separate the JID into the USER and HOST parts.
 
-  Of course, I am obligated to tell you that saving passwords in plain text is a bad idea, so watch your back.
+  Of course, I am obligated to tell you that saving passwords in plain text is a bad idea, so take necessary precautions.
 
 # Basic Usage
 
-One of the quickest ways to initialize the library is to supply the JID and Password on the commandline, as in the the following example.
+One of the quickest ways to initialize the library is to supply the JID and Password on the commandline, as in the following example.
 
 ## Step 1
 Load and initialize the utility.
