@@ -52,7 +52,7 @@ xmpphelp() {
 	if [ $# -gt 0 ]; then
 		# Get help for certain commands
 		for i; do
-			echo "$ $i --help"
+			echo "\$ $i --help"
 			$i --help
 			echo
 		done
