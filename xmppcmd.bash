@@ -175,7 +175,14 @@ send() {
 # Open stream and listen on jid
 # recv < -s [name [type [ns]]] | -p [node] >
 recv() {
-		$XMPPTOOLS_DIR/xmpprecv "${xmpp_user}@${xmpp_host}" ${xmpp_pass} $@
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: recv <-s [name  [type [ns]]] | -p [node]>"
+		echo "Open a stream and listen on JID"
+		return 0
+	fi
+
+	$XMPPTOOLS_DIR/xmpprecv "${xmpp_user}@${xmpp_host}" ${xmpp_pass} $@
 }
 
 # This function allows you to input an unqualified jid, like bob
