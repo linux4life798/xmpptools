@@ -71,6 +71,11 @@ storage_get() {
 	echo
 }
 
+mio_get() {
+	local node=$1
+	get_item $node meta references storage
+}
+
 # mio_pub
 mio_pub() {
 	local node=$1
@@ -98,6 +103,7 @@ mio_act() {
 
 	#<transducerSetData value="1" name="Door State" timestamp="2016-09-01T17:47:05.078179-0400"/>
 }
+
 # Setup BASH Completions #
 
 if (( COMPLEX_COMPLETIONS_ENABLED )); then
