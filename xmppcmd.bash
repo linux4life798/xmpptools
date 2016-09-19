@@ -30,9 +30,10 @@ XMPP_CMDS+=( pretty , )
 XMPP_CMDS+=( get_config get_jid get_pass get_pubsub , )
 XMPP_CMDS+=( message create delete publish retract purge , )
 XMPP_CMDS+=( subscribe unsubscribe , )
+XMPP_CMDS+=( get_features , )
 XMPP_CMDS+=( get_nodes get_items get_item , )
 XMPP_CMDS+=( get_subscriptions get_subscribers set_subscribers , )
-XMPP_CMDS+=( get_affiliations get_affiliates set_affiliations , )
+XMPP_CMDS+=( get_affiliations get_affiliates get_options set_affiliations , )
 XMPP_CMDS+=( get_vcard set_vcard , )
 XMPP_CMDS+=( send send_stanza_iq stanza_pubsub , )
 XMPP_CMDS+=( list_nodes , )
@@ -641,6 +642,23 @@ unsubscribe() {
 	fi
 }
 
+# Discover server features
+# get_features
+get_features() {
+	# check args
+	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_features"
+		echo "Discover server features"
+		return 0
+	fi
+
+	{
+		eof | stanza identity "category=pubsub" "type=service"
+		eof | stanza feature "var=http://jabber.org/protocol/pubsub"
+	} \
+	| stanza_query info \
+	| send_stanza_iq get
+}
 
 # Get all nodes on the pubsub server
 # get_nodes
@@ -776,6 +794,25 @@ get_affiliates() {
 	eof \
 	| stanza affiliations "node=$node" \
 	| stanza_pubsub owner \
+	| send_stanza_iq get
+
+}
+
+# Request the subscription options for a node
+# get_options <node>
+get_options() {
+	local node=$1
+
+	# check args
+	if (( $# < 1 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
+		echo "Usage: get_options <node>"
+		echo "Request the subscription options for a node"
+		return 0
+	fi
+
+	eof \
+	| stanza options "node=$node" "jid=$(get_jid)"  \
+	| stanza_pubsub \
 	| send_stanza_iq get
 
 }
@@ -1138,6 +1175,7 @@ fi
 # Setup BASH Completions #
 
 if (( COMPLEX_COMPLETIONS_ENABLED )); then
+	complete -W "" get_features
 	complete -W "" get_nodes
 	complete -F _single_node delete
 	complete -F _single_node purge
@@ -1146,6 +1184,7 @@ if (( COMPLEX_COMPLETIONS_ENABLED )); then
 	complete -F _single_node get_affiliations
 	complete -F _single_node set_affiliations # TODO: Fix details
 	complete -F _single_node get_subscriptions
+	complete -F _single_node get_options
 	complete -F _single_node get_subscribers
 	complete -F _single_node set_subscribers # TODO: Fix details
 	complete -F _subscribe subscribe
@@ -1156,6 +1195,7 @@ if (( COMPLEX_COMPLETIONS_ENABLED )); then
 	complete -F _recv recv
 else
 	{
+	complete -r get_features
 	complete -r get_nodes
 	complete -r delete
 	complete -r purge
@@ -1163,6 +1203,7 @@ else
 	complete -r get_affiliates get_affiliations
 	complete -r set_affiliations
 	complete -r get_subscriptions
+	complete -r get_options
 	complete -r get_subscribers
 	complete -r set_subscribers
 	complete -r subscribe
