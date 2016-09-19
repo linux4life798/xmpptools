@@ -641,6 +641,8 @@ unsubscribe() {
 	fi
 }
 
+
+# Get all nodes on the pubsub server
 # get_nodes
 get_nodes() {
 	# check args
@@ -1136,6 +1138,7 @@ fi
 # Setup BASH Completions #
 
 if (( COMPLEX_COMPLETIONS_ENABLED )); then
+	complete -W "" get_nodes
 	complete -F _single_node delete
 	complete -F _single_node purge
 	complete -F _single_node get_items
@@ -1153,6 +1156,7 @@ if (( COMPLEX_COMPLETIONS_ENABLED )); then
 	complete -F _recv recv
 else
 	{
+	complete -r get_nodes
 	complete -r delete
 	complete -r purge
 	complete -r get_items
