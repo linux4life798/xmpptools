@@ -165,6 +165,14 @@ send() {
 		return 0
 	fi
 
+	# Test if the JID is properly set
+	if ! get_jid > /dev/null; then
+		if (( DEBUG > 0 )); then
+			echo "Error - JID not set" >&2
+		fi
+		return 1
+	fi
+
 	if [ $# -gt 0 ]; then
 		# wait for response and format response
 		flatten_and_check | send_xmppsend $@ | xml_prettyprint
@@ -348,12 +356,17 @@ pretty() {
 }
 
 # Print out the active jid
+# returns with 1 if JID not set
 get_jid() {
 	# check args
 	if (( $# < 0 )) || [[ "$1" =~ --help ]] || [[ "$1" =~ -h ]]; then
 		echo "Usage: get_jid"
 		echo "Print out the active JID being used"
 		return 0
+	fi
+
+	if [ -z "${xmpp_user}" -o -z "${xmpp_host}" ]; then
+		return 1
 	fi
 
 	echo ${xmpp_user}@${xmpp_host}
