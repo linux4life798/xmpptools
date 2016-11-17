@@ -4,8 +4,11 @@
 # Craig Hesling <craig@hesling.com>
 # September 2, 2016
 
+# Runtime Settings #
+XMPPTOOLS_DIR=`dirname $BASH_SOURCE` # find my directory
+
 # Import xmpptools
-. xmppcmd.bash $@
+. $XMPPTOOLS_DIR/xmppcmd.bash $@
 
 # TODO: Fix timestamp
 timestamp() {
