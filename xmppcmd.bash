@@ -1134,6 +1134,12 @@ xmpp_pass=${2:-$xmpp_pass}
 xmpp_host=${JID[1]:-$xmpp_host}
 xmpp_pubsub=${3:-$xmpp_pubsub}
 
+# If the pubsub server still isn't set, derive it from host
+if [ -n "${xmpp_host}" ]; then
+	# we condition on xmpp_host, so that we don't have xmpp_pubsub set to "pubsub."
+	xmpp_pubsub=${xmpp_pubsub:-pubsub.$xmpp_host}
+fi
+
 # Runtime Settings #
 XML_PRETTYPRINT_UTIL="xmllint"
 XMPPTOOLS_DIR=`dirname $BASH_SOURCE`
