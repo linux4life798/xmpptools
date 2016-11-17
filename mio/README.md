@@ -1,2 +1,3 @@
 # Description
-This directory is MIO specific utilities and settings.
+
+This directory is for MIO specific utilities and settings.
