@@ -5,7 +5,7 @@
 # September 2, 2016
 
 # Runtime Settings #
-XMPPTOOLS_DIR=`dirname $BASH_SOURCE` # find my directory
+XMPPTOOLS_DIR=`dirname $BASH_SOURCE`/.. # find my directory
 
 # Import xmpptools
 . $XMPPTOOLS_DIR/xmppcmd.bash $@
