@@ -76,7 +76,7 @@ mio_get() {
 	get_item $node meta references storage
 }
 
-# mio_pub
+# mio_pub 7dd74af4-ac4f-11e6-9e0c-180373458145 Temperature 23.78
 mio_pub() {
 	local node=$1
 	local transducer="$2"
@@ -90,7 +90,7 @@ mio_pub() {
 	#<transducerData value="1.000000" name="Door State" timestamp="2016-09-01T16:47:06.173118-0500"/>
 }
 
-# mio_act
+# mio_act 03a4fdc0-dce5-11e4-ba47-d7d35fb6b294 "Door State" 1
 mio_act() {
 	local node=$1
 	local transducer="$2"
